@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <script type="text/javascript" src="xml3d.js"></script>
+  <script type="text/javascript" src="camera.js"></script>
+  <title>My very first XML3D teapot</title>
+</head>
+<body>
+<xml3d xmlns="http://www.xml3d.org/2009/xml3d">
+<!--   <view id="defaultView" position="10 12.0 44.065818786621094" orientation="0 1 0 0.2"></view>
+ -->
+  <shader id="orangePhong" script="urn:xml3d:shader:phong">
+    <float3 name="diffuseColor">1 0.5 0</float3>
+  </shader>
+
+            <lightshader id="light1" script="urn:xml3d:lightshader:directional">
+                <float3 name="intensity">0.6 0.6 0.6</float3>
+            </lightshader>
+
+            <group style="transform: translate3d(50px, 50px, 50px)" >
+                <light shader="#light1"></light>
+            </group>
+
+  <view position="100 -20 290"> </view>
+  <transform id="teapot_tf" rotation="0 1 0 1.5"></transform>
+  <group shader="#orangePhong" transform="#teapot_tf">
+    <mesh src="teapot.json" ></mesh>
+  </group>
+
+
+</xml3d>
+
+  
+  
+</body>
+<script type="text/javascript">
+</script>
+</html>

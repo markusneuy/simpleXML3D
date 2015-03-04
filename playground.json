@@ -1,0 +1,6 @@
+playground.json
+
+{
+  "main": "index.html",
+  "path": "www"
+}

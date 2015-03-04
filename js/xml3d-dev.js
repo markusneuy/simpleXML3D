@@ -21,13 +21,13 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-@version: 4.7
+@version: CONTINUOUS BUILD / sha: 552e31a / 2014-08-26 17:52:19 +0200
 **/
 /** @namespace * */
 var XML3D = XML3D || {};
 
 /** @define {string} */
-XML3D.version = '4.7';
+XML3D.version = 'CONTINUOUS BUILD / sha: 552e31a / 2014-08-26 17:52:19 +0200';
 /** @const */
 XML3D.xml3dNS = 'http://www.xml3d.org/2009/xml3d';
 /** @const */
@@ -1648,23 +1648,6 @@ XML3D.URI.prototype.getAbsoluteURI = function(docUri){
 
     return docUriObj;
 }
-
-/**
- * Returns if this URI has the same origin as the provided reference
- * @param {XML3D.URI|string} other
- * @returns {boolean}
- */
-XML3D.URI.prototype.hasSameOrigin = function(other) {
-    if (typeof other == 'string')
-        other = new XML3D.URI(other);
-
-    if(this.scheme == "blob") {
-        return true;
-    }
-
-    return this.scheme == other.scheme && this.authority == other.authority;
-};
-
 
 // Restore the URI to it's stringy glory.
 XML3D.URI.prototype.toString = function() {
@@ -7668,19 +7651,19 @@ if(typeof(exports) !== 'undefined') {
  * It is assumed to have a random() method.
  */
 var SimplexNoise = function(r) {
-    if (r == undefined) r = Math;
+	if (r == undefined) r = Math;
   this.grad3 = [[1,1,0],[-1,1,0],[1,-1,0],[-1,-1,0], 
                                  [1,0,1],[-1,0,1],[1,0,-1],[-1,0,-1], 
                                  [0,1,1],[0,-1,1],[0,1,-1],[0,-1,-1]]; 
   this.p = [];
   for (var i=0; i<256; i++) {
-      this.p[i] = Math.floor(r.random()*256);
+	  this.p[i] = Math.floor(r.random()*256);
   }
   // To remove the need for index wrapping, double the permutation table length 
   this.perm = []; 
   for(var i=0; i<512; i++) {
-        this.perm[i]=this.p[i & 255];
-    } 
+		this.perm[i]=this.p[i & 255];
+	} 
 
   // A lookup table to traverse the simplex around a given point in 4D. 
   // Details can be found where this table is used, in the 4D noise method. 
@@ -7696,7 +7679,7 @@ var SimplexNoise = function(r) {
 };
 
 SimplexNoise.prototype.dot = function(g, x, y) { 
-    return g[0]*x + g[1]*y;
+	return g[0]*x + g[1]*y;
 };
 
 SimplexNoise.prototype.noise = function(xin, yin) { 
@@ -9749,9 +9732,6 @@ SimplexNoise.prototype.noise3d = function(xin, yin, zin) {
 }(window.XML3D));(function() {
     "use strict";
 
-    var OPTION_RESOURCE_CORS = "resource-crossorigin-attribute";
-    XML3D.options.register(OPTION_RESOURCE_CORS, "anonymous");
-
     var c_cachedDocuments = {};
     var c_factories = {};
     var c_cachedAdapterHandles = {};
@@ -10409,7 +10389,7 @@ SimplexNoise.prototype.noise3d = function(xin, yin, zin) {
     /**
      * This function is called to load an Image.
      *
-     * @param {XML3D.URI} uri Image URI
+     * @param {string} uri Image URI
      * @param {function(Event, HTMLImageElement)} loadListener Function called when image was successfully loaded.
      *                                It will be called with event as the first and image as the second parameter.
      * @param {function(Event, HTMLImageElement)} errorListener Function called when image could not be loaded.
@@ -10429,20 +10409,17 @@ SimplexNoise.prototype.noise3d = function(xin, yin, zin) {
             loadComplete(0, uri);
             errorListener(e, image);
         };
-        if(!uri.hasSameOrigin(document.location.href)) {
-            image.crossOrigin = XML3D.options.getValue(OPTION_RESOURCE_CORS);
-            XML3D.debug.logWarning("You are using an cross-origin image as texture. This might cause troubles cause the canvas is 'tainted'.")
-        }
+        image.crossOrigin = "anonymous";
 
-        image.src = uri.toString(); // here loading starts
+        image.src = uri; // here loading starts
         return image;
-    };
+    }
 
 
     /**
      * This function is called to load a Video.
      *
-     * @param {XML3D.URI} uri Video URI
+     * @param {string} uri Video URI
      * @param {boolean} autoplay
      * @param {Object} listeners  Dictionary of all listeners to register with video element.
      *                            Listeners will be called with event as the first and video as the second parameter.
@@ -10460,12 +10437,7 @@ SimplexNoise.prototype.noise3d = function(xin, yin, zin) {
 
         video.addEventListener("canplay", loadCompleteCallback, true);
         video.addEventListener("error", loadCompleteCallback, true);
-
-        if (!uri.hasSameOrigin(document.location.href)) {
-            video.crossOrigin = XML3D.options.getValue(OPTION_RESOURCE_CORS);
-            XML3D.debug.logWarning("You are using an cross-origin video as texture. This might cause troubles cause the canvas is 'tainted'.", uri)
-        }
-
+        video.crossorigin = "anonymous";
         video.autoplay = autoplay;
 
         function createCallback(listener) {
@@ -10478,7 +10450,7 @@ SimplexNoise.prototype.noise3d = function(xin, yin, zin) {
             video.addEventListener(eventName, createCallback(listeners[eventName]), true);
         }
 
-        video.src = uri.toString(); // here loading starts
+        video.src = uri; // here loading starts
         return video;
     }
 
@@ -11869,18 +11841,12 @@ XML3D.TextureTypes["3d"] = 2;
 XML3D.TextureTypes[2] = "3d";
 // FilterTypes
 XML3D.FilterTypes = {};
+XML3D.FilterTypes["none"] = 0;
+XML3D.FilterTypes[0] = "none";
 XML3D.FilterTypes["nearest"] = 1;
 XML3D.FilterTypes[1] = "nearest";
 XML3D.FilterTypes["linear"] = 2;
 XML3D.FilterTypes[2] = "linear";
-XML3D.FilterTypes["nearest-mipmap-nearest"] = 3;
-XML3D.FilterTypes[3] = "nearest-mipmap-nearest";
-XML3D.FilterTypes["linear-mipmap-nearest"] = 4;
-XML3D.FilterTypes[4] = "linear-mipmap-nearest";
-XML3D.FilterTypes["nearest-mipmap-linear"] = 5;
-XML3D.FilterTypes[5] = "nearest-mipmap-linear";
-XML3D.FilterTypes["linear-mipmap-linear"] = 6;
-XML3D.FilterTypes[6] = "linear-mipmap-linear";
 // WrapTypes
 XML3D.WrapTypes = {};
 XML3D.WrapTypes["clamp"] = 0;
@@ -12366,7 +12332,7 @@ XML3D.classInfo['texture'] = {
     param: {a: XML3D.BoolAttributeHandler, params: false},
     key: {a: XML3D.FloatAttributeHandler, params: 0.0},
     type: {a: XML3D.EnumAttributeHandler, params: {e: XML3D.TextureTypes, d: 0}},
-    filterMin: {a: XML3D.EnumAttributeHandler, params: {e: XML3D.FilterTypes, d: 6}},
+    filterMin: {a: XML3D.EnumAttributeHandler, params: {e: XML3D.FilterTypes, d: 2}},
     filterMag: {a: XML3D.EnumAttributeHandler, params: {e: XML3D.FilterTypes, d: 2}},
     filterMip: {a: XML3D.EnumAttributeHandler, params: {e: XML3D.FilterTypes, d: 1}},
     wrapS: {a: XML3D.EnumAttributeHandler, params: {e: XML3D.WrapTypes, d: 0}},
@@ -12472,24 +12438,6 @@ var Xflow = {};
         'ubyte': Xflow.DATA_TYPE.UBYTE
     };
 
-    // Values are chosen to be in line with DATA_TYPE
-    Xflow.TEXTURE_TYPE = {
-        UNKNOWN: 0,
-        FLOAT: 1,
-        UBYTE: 60,
-        USHORT_5_6_5: 70,
-        USHORT_4_4_4_4: 71,
-        USHORT_5_5_5_1: 72
-    };
-
-    Xflow.TEXTURE_FORMAT = {
-        UNKNOWN: 0,
-        ALPHA: 100,
-        RGB: 101,
-        RGBA: 102,
-        LUMINANCE: 103,
-        LUMINANCE_ALPHA: 104
-    };
 
     Xflow.DATA_TYPE_TUPLE_SIZE = {};
     Xflow.DATA_TYPE_TUPLE_SIZE[Xflow.DATA_TYPE.FLOAT] = 1;
@@ -12505,6 +12453,7 @@ var Xflow = {};
     Xflow.DATA_TYPE_TUPLE_SIZE[Xflow.DATA_TYPE.BYTE] = 1;
     Xflow.DATA_TYPE_TUPLE_SIZE[Xflow.DATA_TYPE.UBYTE] = 1;
 
+
     Xflow.TYPED_ARRAY_MAP = {};
     Xflow.TYPED_ARRAY_MAP[Xflow.DATA_TYPE.FLOAT] = Float32Array;
     Xflow.TYPED_ARRAY_MAP[Xflow.DATA_TYPE.FLOAT2] = Float32Array;
@@ -12517,18 +12466,6 @@ var Xflow = {};
     Xflow.TYPED_ARRAY_MAP[Xflow.DATA_TYPE.BYTE] = Int8Array;
     Xflow.TYPED_ARRAY_MAP[Xflow.DATA_TYPE.UBYTE] = Uint8Array;
 
-    // texture formats
-    // float and ubyte are mapped to DATA_TYPE values above
-    Xflow.TYPED_ARRAY_MAP[Xflow.TEXTURE_TYPE.USHORT_4_4_4_4] = Uint16Array;
-    Xflow.TYPED_ARRAY_MAP[Xflow.TEXTURE_TYPE.USHORT_5_6_5] = Uint16Array;
-    Xflow.TYPED_ARRAY_MAP[Xflow.TEXTURE_TYPE.USHORT_5_5_5_1] = Uint16Array;
-
-    Xflow.TEXTURE_FORMAT_TUPLE_SIZE = {};
-    Xflow.TEXTURE_FORMAT_TUPLE_SIZE[Xflow.TEXTURE_FORMAT.ALPHA] = 1;
-    Xflow.TEXTURE_FORMAT_TUPLE_SIZE[Xflow.TEXTURE_FORMAT.RGB] = 3;
-    Xflow.TEXTURE_FORMAT_TUPLE_SIZE[Xflow.TEXTURE_FORMAT.RGBA] = 4;
-    Xflow.TEXTURE_FORMAT_TUPLE_SIZE[Xflow.TEXTURE_FORMAT.LUMINANCE] = 1;
-    Xflow.TEXTURE_FORMAT_TUPLE_SIZE[Xflow.TEXTURE_FORMAT.LUMINANCE_ALPHA] = 2;
 
     Xflow.getTypeName = function (type) {
         var i;
@@ -12605,8 +12542,7 @@ var Xflow = {};
         LOAD_START: 3,
         LOAD_END: 4,
         CHANGED_SIZE: 5,
-        CHANGED_REMOVED: 6,
-        CHANGED_SIZE_TYPE: 7
+        CHANGED_REMOVED: 6
     };
 
     Xflow.RESULT_TYPE = {
@@ -12675,8 +12611,7 @@ var Xflow = {};
     Xflow.PLATFORM = {
         JAVASCRIPT: 0,
         GLSL: 1,
-        CL: 2,
-        ASYNC: 3
+        CL: 2
     };
 
     Xflow.PROCESS_STATE = {
@@ -12895,28 +12830,10 @@ BufferEntry.prototype.setValue = function(v){
     Xflow._callListedCallback();
 }
 
-function getSizeType(size, tupleSize){
-    if(size >= tupleSize*2)
-        return 2;
-    else if(size >= tupleSize)
-        return 1;
-    else
-        return 0;
-}
-
 BufferEntry.prototype._setValue = function(v){
-    var oldSize = (this._value ? this._value.length : 0), newSize = (v ? v.length : 0), tupleSize = this.getTupleSize();
-    var notification;
-    if(getSizeType(oldSize, tupleSize) != getSizeType(newSize, tupleSize))
-        notification = Xflow.DATA_ENTRY_STATE.CHANGED_SIZE_TYPE;
-    else if(oldSize != newSize){
-        notification = Xflow.DATA_ENTRY_STATE.CHANGED_SIZE;
-    }
-    else{
-        notification = Xflow.DATA_ENTRY_STATE.CHANGED_VALUE;
-    }
+    var newSize = (this._value ? this._value.length : 0) != (v ? v.length : 0);
     this._value = v;
-    notifyListeners(this, notification);
+    notifyListeners(this, newSize ? Xflow.DATA_ENTRY_STATE.CHANGED_SIZE : Xflow.DATA_ENTRY_STATE.CHANGED_VALUE);
 }
 
 /** @return {Object} */
@@ -12953,123 +12870,44 @@ BufferEntry.prototype.isEmpty = function(){
 // Xflow.TextureEntry
 //----------------------------------------------------------------------------------------------------------------------
 
-var tmpCanvas, tmpContext;
+var tmpCanvas = null;
+var tmpContext = null;
 
+/**
+ * Xflow.toImageData converts ImageData-like objects to real ImageData
+ * @param imageData
+ * @return {*}
+ */
 Xflow.toImageData = function(imageData) {
-    if(imageData instanceof ImageData)
+    if (imageData instanceof ImageData)
         return imageData;
-    if(!imageData.data)
+    if (!imageData.data)
         throw new Error("no data property");
-    if(!imageData.width)
+    if (!imageData.width)
         throw new Error("no width property");
-    if(!imageData.height)
+    if (!imageData.height)
         throw new Error("no height property");
-    if(!tmpContext) {
+    if (!tmpContext) {
         tmpCanvas = document.createElement('canvas');
         tmpContext = tmpCanvas.getContext('2d');
     }
     var newImageData = tmpContext.createImageData(imageData.width, imageData.height);
-    for(var i = 0; i < imageData.data.length; ++i) {
+    for (var i = 0; i < imageData.data.length; ++i) {
         var v = imageData.data[i];
-        if(v > 255)
+        if (v > 255)
             v = 255;
-        if(v < 0)
+        if (v < 0)
             v = 0;
         newImageData.data[i] = v;
     }
     return newImageData;
-}
+};
 
-function TexelSource(sourceOrWidth, height, format, type) {
-    if (typeof sourceOrWidth === "object") {
-        if (sourceOrWidth.nodeName) {
-            var nodeName = sourceOrWidth.nodeName.toLowerCase();
-            if (nodeName === "video" && (typeof sourceOrWidth.complete === "undefined")) {
-                Object.defineProperties(sourceOrWidth, {
-                    width: {
-                        get: function () {
-                            return this.videoWidth;
-                        }
-                    },
-                    height: {
-                        get: function () {
-                            return this.videoHeight;
-                        }
-                    },
-                    complete: {
-                        get: function () {
-                            return !(this.readyState == 0 || this.videoWidth <= 0 || this.videoHeight <= 0);
-                        }
-                    }
-                });
-            }
-            sourceOrWidth.texelFormat = Xflow.TEXTURE_FORMAT.RGBA;
-            sourceOrWidth.texelType = Xflow.TEXTURE_TYPE.UBYTE;
-        }
-        //assume source is a image data like object
-        this._source = sourceOrWidth;
-    } else {
-        format = format || Xflow.TEXTURE_FORMAT.RGBA;
-        type =  type || Xflow.TEXTURE_TYPE.UBYTE;
-        //create a new texel source backed by type array
-        this._source = {
-            width: sourceOrWidth,
-            height: height,
-            texelFormat: format,
-            texelType: type,
-            data: new Xflow.TYPED_ARRAY_MAP[type](sourceOrWidth * height * Xflow.TEXTURE_FORMAT_TUPLE_SIZE[format])
-        }
-    }
-}
 
-Object.defineProperties(TexelSource.prototype, {
-    imageData: {
-        get: function () {
-            if (this._source instanceof HTMLElement) {
-                var canvas = document.createElement("canvas");
-                canvas.width = this._source.width;
-                canvas.height = this._source.height;
-                var ctx = canvas.getContext("2d");
-                ctx.drawImage(this._source, 0, 0);
-                var source = ctx.getImageData(0, 0, this._source.width, this._source.height);
-                source.texelFormat = this._source.texelFormat;
-                source.texelType = this._source.texelType;
-                this._source = source;
-            }
-            return this._source;
-        }
-    },
-    glTextureData: {
-        get: function () {
-            return this._source;
-        }
-    },
-    complete: {
-        get: function () {
-            return typeof this._source.complete === "undefined" ? true : this._source.complete;
-        }
-    },
-    width: {
-        get: function () {
-            return this._source ? this._source.width : -1;
-        }
-    },
-    height: {
-        get: function () {
-            return this._source ? this._source.height : -1;
-        }
-    },
-    texelFormat: {
-        get: function () {
-            return this._source ? this._source.texelFormat: Xflow.TEXTURE_FORMAT.UNKNOWN;
-        }
-    },
-    texelType: {
-        get: function () {
-            return this._source ? this._source.texelType: Xflow.TEXTURE_TYPE.UNKNOWN;
-        }
-    }
-});
+// TextureEntry data conversion order
+// image -> canvas -> context -> -> imageData
+// Note: don't use TextureEntry's width and height properties, they are deprecated and cause issues with video loading
+// Instead use getWidth and getHeight methods
 
 /**
  * A data entry for a texture.
@@ -13078,82 +12916,102 @@ Object.defineProperties(TexelSource.prototype, {
  * @extends {Xflow.DataEntry}
  * @param {Object} image
  */
-Xflow.TextureEntry = function(source){
+Xflow.TextureEntry = function(image){
     Xflow.DataEntry.call(this, Xflow.DATA_TYPE.TEXTURE);
     this._samplerConfig = new SamplerConfig();
+    this._formatType = null; // null | 'ImageData' | 'number' | 'float32' | 'float64'
     this._loading = false;
-    this.setImage(source);
+    this._updateImage(image);
 
     notifyListeners(this, Xflow.DATA_ENTRY_STATE.CHANGED_NEW);
 };
-
 Xflow.createClass(Xflow.TextureEntry, Xflow.DataEntry);
 var TextureEntry = Xflow.TextureEntry;
 
-Object.defineProperties(Xflow.TextureEntry.prototype, {
-    width: {
-        get: function () {
-            return this._source ? this._source.width : -1;
-        }
-    },
-    height: {
-        get: function () {
-            return this._source ? this._source.height : -1;
-        }
-    },
-    texelFormat: {
-        get: function () {
-            return this._source ? this._source.texelFormat: Xflow.TEXTURE_FORMAT.UNKNOWN;
-        }
-    },
-    texelType: {
-        get: function () {
-            return this._source ? this._source.texelType: Xflow.TEXTURE_TYPE.UNKNOWN;
-        }
-    }
-});
-
 TextureEntry.prototype.isLoading = function() {
-    if (!this._source)
+    var image = this._image;
+    if (!image)
         return false;
-
-    return !this._source.complete;
+    var nodeName = image.nodeName.toLowerCase();
+    if (nodeName == 'img')
+        return !image.complete;
+    if (nodeName == 'canvas')
+        return this._image.width <= 0 || this._image.height <= 0;
+    if (nodeName == 'video')
+        // readyState == 0 is HAVE_NOTHING
+        return image.readyState == 0 || this._image.videoWidth <= 0 || this._image.videoHeight <= 0;
+    return false;
 };
 
-TextureEntry.prototype._createImage = function(width, height, format, type, samplerConfig) {
-    if (!this._source || this.width != width || this.height != height || this.format != format || this.type != type) {
-        var source = new TexelSource(width, height, format, type);
+TextureEntry.prototype._updateImage = function(image) {
+    this._image = image;
+    this._context = null;
+    this._imageData = null;
+    if (this._image) {
+        var nodeName = this._image.nodeName.toLowerCase();
+        if (nodeName == 'video') {
+            this.width = this._image.videoWidth;
+            this.height = this._image.videoHeight;
+        } else {
+            this.width = this._image.width;
+            this.height = this._image.height;
+        }
+        if (nodeName == 'canvas') {
+            this._canvas = this._image;
+            this._copyImageToCtx = false;
+        } else {
+            this._canvas = null;
+            this._copyImageToCtx = true;
+        }
+    } else {
+        this.width = 0;
+        this.height = 0;
+        this._canvas = null;
+    }
+};
 
+/** Create new image
+ *
+ * @param width
+ * @param height
+ * @param formatType
+ * @param samplerConfig
+ * @return {Image|Canvas}
+ */
+TextureEntry.prototype._createImage = function(width, height, formatType, samplerConfig) {
+    if (!this._image || this.getWidth() != width || this.getHeight() != height || this._formatType != formatType) {
+        if (!width || !height)
+            throw new Error("Width or height is not specified");
+        // create dummy image
+        var img = document.createElement('canvas');
+        img.width = width;
+        img.height = height;
+        img.complete = true;
+
+        this._formatType = formatType;
         if (!samplerConfig) {
             samplerConfig = new Xflow.SamplerConfig();
             samplerConfig.setDefaults();
         }
-
         this._samplerConfig.set(samplerConfig);
-        this._setImage(source);
+        this._setImage(img);
     } else {
         this._notifyChanged();
     }
-
-    return this._source;
+    return this._image;
 };
 
-TextureEntry.prototype.setImage = function (s) {
-    this._setImage(s);
+/**
+ * Change the image of the TextureEntry
+ * @param {Object} v
+ **/
+TextureEntry.prototype.setImage = function(v) {
+    this._setImage(v);
     Xflow._callListedCallback();
 };
 
-TextureEntry.prototype._setImage = function (s) {
-    if (!s)
-        this._setSource(null);
-    else if (s instanceof TexelSource)
-        this._setSource(s);
-    else
-        this._setSource(new TexelSource(s));
-};
-
-TextureEntry.prototype._setSource = function(s) {
-    this._source = s;
+TextureEntry.prototype._setImage = function(v) {
+    this._updateImage(v);
     var loading = this.isLoading();
     if(loading){
         this._loading = true;
@@ -13165,20 +13023,104 @@ TextureEntry.prototype._setSource = function(s) {
     }
     else
         notifyListeners(this, Xflow.DATA_ENTRY_STATE.CHANGED_VALUE);
+}
+
+
+TextureEntry.prototype.getFormatType = function() {
+    return this._formatType;
 };
 
-TextureEntry.prototype.asGLTextureValue = function () {
-    return this._source.glTextureData;
+TextureEntry.prototype.getWidth = function() {
+    if (!this._image)
+        return 0;
+    return this._image.videoWidth || this._image.width || 0;
 };
+
+TextureEntry.prototype.getHeight = function() {
+    if (!this._image)
+        return 0;
+    return this._image.videoHeight || this._image.height || 0;
+};
+
+TextureEntry.prototype._flush = function() {
+    if (this._imageData) {
+        if (this._imageData instanceof ImageData) {
+            this._context.putImageData(this._imageData, 0, 0);
+            this._imageData = null;
+        } else {
+            var imageData = Xflow.toImageData(this._imageData);
+            this._context.putImageData(imageData, 0, 0);
+            this._imageData = null;
+        }
+    }
+    if (this._canvas) {
+        this._canvas.complete = true; // for compatibility with img element
+        this._image = this._canvas;
+    }
+};
+
+/** @return {Object} */
+TextureEntry.prototype.getImage = function() {
+    this._flush();
+    return this._image;
+};
+
+TextureEntry.prototype.getCanvas = function() {
+    if (!this._canvas) {
+        this._canvas = document.createElement('canvas');
+        this._canvas.width = this.getWidth();
+        this._canvas.height = this.getHeight();
+        this._canvas.complete = false; // for compatibility with img element
+    } else
+        this._flush();
+    return this._canvas;
+};
+
+TextureEntry.prototype.getFilledCanvas = function() {
+    var canvas = this.getCanvas();
+    this._context = canvas.getContext("2d");
+    if (!this._context)
+        throw new Error("Could not create 2D context.");
+    if (this._copyImageToCtx) {
+        this._context.drawImage(this._image, 0, 0);
+        this._copyImageToCtx = false;
+    }
+    return canvas;
+};
+
+TextureEntry.prototype.getContext2D = function() {
+    if (!this._context) {
+        this.getFilledCanvas(); // will implicitly create context for filled canvas
+    } else
+        this._flush();
+    return this._context;
+};
+
+
+
 
 /** @return {ImageData} */
 TextureEntry.prototype.getValue = function() {
-    if (!this._source)
+    if (!this._image)
         return null;
-    if (!this.isLoading())
-        return this._source.imageData;
-    else
-        return null;
+    if (!this._imageData && !this.isLoading()) {
+        var ctx = this.getContext2D();
+        this._imageData = ctx.getImageData(0, 0, this.getWidth(), this.getHeight());
+        if (this._formatType == 'float32') {
+            this._imageData = {
+                data : new Float32Array(this._imageData.data),
+                width : this._imageData.width,
+                height : this._imageData.height
+            };
+        } else if (this._formatType == 'float64') {
+            this._imageData = {
+                data : new Float64Array(this._imageData.data),
+                width : this._imageData.width,
+                height : this._imageData.height
+            };
+        }
+    }
+    return this._imageData;
 };
 
 /** @return {SamplerConfig} */
@@ -13191,7 +13133,7 @@ TextureEntry.prototype.getLength = function(){
     return 1;
 };
 TextureEntry.prototype.isEmpty = function(){
-    return false;
+    return !this._image
 };
 
 /** @return {number} */
@@ -13213,50 +13155,20 @@ Xflow.ImageDataTextureEntry = function(imageData){
     Xflow.DataEntry.call(this, Xflow.DATA_TYPE.TEXTURE);
     this._samplerConfig = new SamplerConfig();
     this._imageData = null;
-    this._texelFormat = Xflow.TEXTURE_FORMAT.RGBA;
-    this._texelType = Xflow.TEXTURE_TYPE.UBYTE;
-
+    this._formatType = null;
     this._updateImageData(imageData);
 
     notifyListeners(this, Xflow.DATA_ENTRY_STATE.CHANGED_NEW);
 };
-
 Xflow.createClass(Xflow.ImageDataTextureEntry, Xflow.DataEntry);
 var ImageDataTextureEntry = Xflow.ImageDataTextureEntry;
-
-
-Object.defineProperties(Xflow.ImageDataTextureEntry.prototype, {
-    width: {
-        get: function () {
-            return this._imageData ? this._imageData.width : -1;
-        }
-    },
-    height: {
-        get: function () {
-            return this._imageData ? this._imageData.height : -1;
-        }
-    },
-    texelFormat: {
-        get: function () {
-            return this._texelFormat;
-        }
-    },
-    texelType: {
-        get: function () {
-            return this._texelType;
-        }
-    }
-});
-
-
 
 ImageDataTextureEntry.prototype.isLoading = function() {
     return !this._imageData;
 };
 
 ImageDataTextureEntry.prototype._updateImageData = function(imageData) {
-    this._texelFormat = Xflow.TEXTURE_FORMAT.RGBA;
-    this._texelType = Xflow.TEXTURE_TYPE.UBYTE;
+    this._formatType = null;
     this._imageData = imageData;
 };
 
@@ -13268,12 +13180,11 @@ ImageDataTextureEntry.prototype._updateImageData = function(imageData) {
  * @param samplerConfig
  * @return {Image|Canvas}
  */
-ImageDataTextureEntry.prototype._createImage = function(width, height, format, type, samplerConfig) {
-    if (!this._image || this.getWidth() != width || this.getHeight() != height || this._format != format || this._type != type) {
+ImageDataTextureEntry.prototype._createImage = function(width, height, formatType, samplerConfig) {
+    if (!this._image || this.getWidth() != width || this.getHeight() != height || this._formatType != formatType) {
         if (!width || !height)
             throw new Error("Width or height is not specified");
-        this._texelFormat = format;
-        this._texelType = type;
+        this._formatType = formatType;
         if (!samplerConfig) {
             samplerConfig = new Xflow.SamplerConfig();
             samplerConfig.setDefaults();
@@ -13285,7 +13196,10 @@ ImageDataTextureEntry.prototype._createImage = function(width, height, format, t
             height: height,
             data: null
         };
-        if(type == Xflow.TEXTURE_TYPE.FLOAT){
+        if(formatType == 'float64'){
+            imageData.data = new Float64Array(width*height*4);
+        }
+        else if(formatType == 'float32'){
             imageData.data = new Float32Array(width*height*4);
         }
         else {
@@ -13333,7 +13247,11 @@ ImageDataTextureEntry.prototype.getLength = function(){
     return 1;
 };
 ImageDataTextureEntry.prototype.isEmpty = function(){
-    return false;
+    return !this._imageData
+};
+
+ImageDataTextureEntry.prototype.getFormatType = function() {
+    return this._formatType;
 };
 
 
@@ -13542,8 +13460,6 @@ InputNode.prototype.onDataChange = function(newValue, notification) {
         case Xflow.DATA_ENTRY_STATE.CHANGED_VALUE: downNote = Xflow.RESULT_STATE.CHANGED_DATA_VALUE; break;
         case Xflow.DATA_ENTRY_STATE.LOAD_START: downNote = Xflow.RESULT_STATE.IMAGE_LOAD_START; break;
         case Xflow.DATA_ENTRY_STATE.LOAD_END: downNote = Xflow.RESULT_STATE.IMAGE_LOAD_START; break;
-        case Xflow.DATA_ENTRY_STATE.CHANGED_SIZE_TYPE: downNote = Xflow.RESULT_STATE.CHANGED_STRUCTURE; break;
-        case Xflow.DATA_ENTRY_STATE.CHANGED_SIZE: downNote = Xflow.RESULT_STATE.CHANGED_DATA_SIZE; break;
         default: downNote = Xflow.RESULT_STATE.CHANGED_DATA_SIZE; break;
     }
     notifyParentsOnChanged(this,downNote);
@@ -15101,7 +15017,6 @@ Xflow.VertexShader.prototype.getGLSLCode = function(){
     Xflow.DataSlot = function(dataEntry, key){
         this.key = key || 0;
         this.dataEntry = dataEntry;
-        this.asyncDataEntry = null;
         this.parentChannels = [];
 
     }
@@ -15111,11 +15026,6 @@ Xflow.VertexShader.prototype.getGLSLCode = function(){
     Xflow.DataSlot.prototype.removeChannel = function(channel){
         var idx = this.parentChannels.indexOf(channel);
         if(idx != -1) this.parentChannels.splice(idx, 1);
-    }
-    Xflow.DataSlot.prototype.swapAsync = function(){
-        var tmp = this.dataEntry;
-        this.dataEntry = this.asyncDataEntry;
-        this.asyncDataEntry = tmp;
     }
 
     Xflow.DataSlot.prototype.setDataEntry = function(dataEntry, changeType){
@@ -15400,6 +15310,43 @@ Xflow.VertexShader.prototype.getGLSLCode = function(){
         return ++c_channelKeyIdx;
     }
 
+
+
+//----------------------------------------------------------------------------------------------------------------------
+// Xflow.Substitution
+//----------------------------------------------------------------------------------------------------------------------
+
+    Xflow.Substitution = function(channelMap, substitution, subtreeProtoNames){
+        this.map = {};
+        if(substitution && subtreeProtoNames){
+            for(var i = 0; i < subtreeProtoNames.length; ++i){
+                var name = subtreeProtoNames[i];
+                this.map[name] = substitution.map[name];
+            }
+        }
+        for(var name in channelMap.map){
+            this.map[name] = channelMap.getChannel(name, substitution);
+        }
+    }
+    var Substitution = Xflow.Substitution;
+
+    Substitution.prototype.getKey = function(nameFilter){
+        var result = [];
+        if(nameFilter){
+            for(var i = 0; i < nameFilter.length; ++i){
+                var channel = this.map[nameFilter[i]];
+                result[i] = nameFilter[i] + ">" + (channel && channel.id || "X" );
+            }
+        }
+        else{
+            var i = 0;
+            for(var name in this.map){
+                var channel = this.map[name];
+                result[i++] = name + ">" + (channel && channel.id || "X" );
+            }
+        }
+        return result.length > 0 ? result.join(";") : 0;
+    }
 
 })();
 
@@ -15844,14 +15791,6 @@ Xflow.VertexShader.prototype.getGLSLCode = function(){
 // Xflow.ProcessNode
 //----------------------------------------------------------------------------------------------------------------------
 
-var ASYNC_PROCESS_STATE = {
-    IDLE : 0,
-    RUNNING : 1,
-    RESCHEDULED : 2,
-    INIT: 3
-}
-
-
 /**
  * @constructor
  * @extends {Xflow.GraphNode}
@@ -15866,63 +15805,20 @@ Xflow.ProcessNode = function(channelNode){
     this.children = [];
     this.descendants = [];
     this.executers = [];
-    this.asyncProcessState = ASYNC_PROCESS_STATE.INIT;
     constructProcessNode(this, channelNode);
-    if(Xflow.isOperatorAsync(this.operator)){
-        this._bindedAsyncCallback = this.receiveAsyncProcessing.bind(this);
-    }
 };
 var ProcessNode = Xflow.ProcessNode;
 
 ProcessNode.prototype.onXflowChannelChange = function(channel, state){
-    if(Xflow.isOperatorAsync(this.operator)){
-        if(this.asyncProcessState != ASYNC_PROCESS_STATE.INIT){
-            this.status = Xflow.PROCESS_STATE.MODIFIED;
-            this.updateState();
-        }
-    }
-    else{
-        if(state == Xflow.DATA_ENTRY_STATE.CHANGED_VALUE &&
-            this.status > Xflow.PROCESS_STATE.UNPROCESSED)
-            this.status = Xflow.PROCESS_STATE.UNPROCESSED;
-        else
-            this.status = Xflow.PROCESS_STATE.MODIFIED;
-        this.notifyOutputChanged(state);
-    }
-}
-
-ProcessNode.prototype.startAsyncProcessing = function(){
-    if(this.asyncProcessState == ASYNC_PROCESS_STATE.IDLE || this.asyncProcessState == ASYNC_PROCESS_STATE.INIT){
-        this.asyncProcessState = ASYNC_PROCESS_STATE.RUNNING;
-        var executer = getOrCreateExecuter(this, Xflow.PLATFORM.ASYNC);
-        executer.run(this._bindedAsyncCallback);
-    }
-    else{
-        this.asyncProcessState = ASYNC_PROCESS_STATE.RESCHEDULED;
-    }
-}
-ProcessNode.prototype.receiveAsyncProcessing = function(){
-    this.status = Xflow.PROCESS_STATE.PROCESSED;
-    this.notifyOutputChanged(Xflow.DATA_ENTRY_STATE.CHANGED_SIZE_TYPE);
-    if(this.asyncProcessState == ASYNC_PROCESS_STATE.RESCHEDULED){
-        this.asyncProcessState = ASYNC_PROCESS_STATE.IDLE;
+    if(state == Xflow.DATA_ENTRY_STATE.CHANGED_VALUE &&
+        this.status > Xflow.PROCESS_STATE.UNPROCESSED)
+        this.status = Xflow.PROCESS_STATE.UNPROCESSED;
+    else
         this.status = Xflow.PROCESS_STATE.MODIFIED;
-        this.updateState();
-    }
-    else{
-        this.asyncProcessState = ASYNC_PROCESS_STATE.IDLE;
-    }
-    Xflow._callListedCallback();
-}
-
-
-
-ProcessNode.prototype.notifyOutputChanged = function(state){
     for(var name in this.outputDataSlots){
         this.outputDataSlots[name].notifyOnChange(state);
     }
 }
-
 
 ProcessNode.prototype.clear = function(){
     for(var name in this.inputChannels){
@@ -15932,7 +15828,7 @@ ProcessNode.prototype.clear = function(){
 
 ProcessNode.prototype.updateState = function(){
     if(this.status == Xflow.PROCESS_STATE.MODIFIED){
-        this.status = Xflow.PROCESS_STATE.UNPROCESSED;
+        this.status = Xflow.PROCESS_STATE.UNPROCESSED
 
         if(this.owner.loading)
             this.status = Xflow.PROCESS_STATE.LOADING;
@@ -15946,19 +15842,13 @@ ProcessNode.prototype.updateState = function(){
             if(this.status > Xflow.PROCESS_STATE.INVALID &&
                 !checkInput(this, this.operator, this.owner.owner._computeInputMapping, this.inputChannels))
                 this.status = Xflow.PROCESS_STATE.INVALID;
-
-            if(this.status == Xflow.PROCESS_STATE.UNPROCESSED && Xflow.isOperatorAsync(this.operator)){
-                this.status = this.asyncProcessState == ASYNC_PROCESS_STATE.INIT ? Xflow.PROCESS_STATE.LOADING
-                    : Xflow.PROCESS_STATE.PROCESSED;
-                this.startAsyncProcessing();
-            }
-
         }
     }
     return this.status;
 }
 
 ProcessNode.prototype.process = function(){
+    // TODO: Fix this with respect to states
     var executer;
 
     if(this.status == Xflow.PROCESS_STATE.UNPROCESSED){
@@ -16052,22 +15942,18 @@ function synchronizeChildren(children, descendants, inputChannels){
 }
 
 function synchronizeOutput(operator, outputs){
-    var async = Xflow.isOperatorAsync(operator);
     for(var i in operator.outputs){
         var d = operator.outputs[i];
 
-        var entry, asyncEntry;
+        var entry;
         var type = d.type;
         if(type != Xflow.DATA_TYPE.TEXTURE){
             entry = new Xflow.BufferEntry(type, null);
-            if(async) asyncEntry = new Xflow.BufferEntry(type, null);
         }
         else{
             entry = window.document ? new Xflow.TextureEntry(null) : new Xflow.ImageDataTextureEntry(null);
-            if(async) asyncEntry = window.document ? new Xflow.TextureEntry(null) : new Xflow.ImageDataTextureEntry(null);
         }
         outputs[d.name] = new Xflow.DataSlot(entry, 0);
-        if(async) outputs[d.name].asyncDataEntry = asyncEntry;
     }
 }
 
@@ -16076,6 +15962,7 @@ function getOrCreateExecuter(node, platform){
         node.executers[platform] = new Xflow.Executer(node, platform);
     }
     return node.executers[platform];
+
 }
 
 
@@ -16262,24 +16149,20 @@ function getRequestVSResult(requestNode)
         return true;
     }
 
-
-    Xflow.Executer.prototype.run = function(asyncCallback){
+    Xflow.Executer.prototype.run = function(){
         runSubNodes(this);
         updateIterateState(this);
 
         this.program = Xflow.createProgram(this.operatorList);
 
         if(this.program){
-            this.operatorList.allocateOutput(this.programData, !!asyncCallback);
-            this.program.run(this.programData, asyncCallback);
+            this.operatorList.allocateOutput(this.programData);
+            this.program.run(this.programData);
         }
-        if(this.platform != Xflow.PLATFORM.ASYNC){
-            var i = this.mergedOutputNodes.length;
-            while(i--){
-                this.mergedOutputNodes[i].status = Xflow.PROCESS_STATE.PROCESSED;
-            }
+        var i = this.mergedOutputNodes.length;
+        while(i--){
+            this.mergedOutputNodes[i].status = Xflow.PROCESS_STATE.PROCESSED;
         }
-
 
     }
 
@@ -16359,9 +16242,8 @@ function getRequestVSResult(requestNode)
 
     function canOperatorMerge(cData, operator, platform){
         // TODO: Detect merge support
-        return (platform == Xflow.PLATFORM.ASYNC || !Xflow.isOperatorAsync(operator)) &&
-            (!cData.firstOperator ||
-            (platform == Xflow.PLATFORM.GLSL && cData.firstOperator.evaluate_glsl && operator.evaluate_glsl));
+        return !cData.firstOperator ||
+            (platform == Xflow.PLATFORM.GLSL && cData.firstOperator.evaluate_glsl && operator.evaluate_glsl);
     }
 
     function blockSubtree(cData, node){
@@ -16405,6 +16287,7 @@ function getRequestVSResult(requestNode)
 
         for(var i = 0; i < cData.constructionOrder.length; ++i){
             var node = cData.constructionOrder[i];
+            var currentIdx = i;
 
             var entry = new Xflow.OperatorEntry(node.operator);
 
@@ -16703,10 +16586,6 @@ Xflow.initAnonymousOperator = function(name, data){
     return data;
 }
 
-Xflow.isOperatorAsync = function(operator){
-    return !!operator.evaluate_async;
-}
-
 Xflow.getOperators = function(name, platform){
     platform = platform || Xflow.PLATFORM.JAVASCRIPT;
 
@@ -16905,7 +16784,7 @@ function initOperator(operator){
 
     var c_sizes = {};
 
-    Xflow.OperatorList.prototype.allocateOutput = function(programData, async){
+    Xflow.OperatorList.prototype.allocateOutput = function(programData){
         for(var i = 0; i < this.entries.length; ++i){
             var entry = this.entries[i];
             var operator = entry.operator;
@@ -16919,11 +16798,8 @@ function initOperator(operator){
             }
             for(var j = 0; j < operator.outputs.length; ++j){
                 var d = operator.outputs[j];
-                var dataSlot = programData.outputs[entry.getOutputIndex(j)], dataEntry;
-                dataEntry = async ? dataSlot.asyncDataEntry : dataSlot.dataEntry;
+                var dataEntry = programData.outputs[entry.getOutputIndex(j)].dataEntry;
 
-                if(d.noAlloc)
-                    continue;
 
                 if (dataEntry.type == Xflow.DATA_TYPE.TEXTURE) {
                     // texture entry
@@ -16932,10 +16808,9 @@ function initOperator(operator){
                         var texParams = c_sizes[d.name];
                         var newWidth = texParams.imageFormat.width;
                         var newHeight = texParams.imageFormat.height;
-                        var newType = texParams.imageFormat.texelType;
-                        var newFormat = texParams.imageFormat.texelFormat;
+                        var newFormatType = texParams.imageFormat.type;
                         var newSamplerConfig = texParams.samplerConfig;
-                        dataEntry._createImage(newWidth, newHeight, newFormat, newType, newSamplerConfig);
+                        dataEntry._createImage(newWidth, newHeight, newFormatType, newSamplerConfig);
                     } else if (d.sizeof) {
                         var srcEntry = null;
                         for(var k = 0; k < operator.mapping.length; ++k){
@@ -16945,15 +16820,14 @@ function initOperator(operator){
                             }
                         }
                         if (srcEntry) {
-                            var newWidth = Math.max(srcEntry.width, 1);
-                            var newHeight = Math.max(srcEntry.height, 1);
-                            var newFormat = d.texelFormat || srcEntry.texelFormat;
-                            var newType = d.texelType || srcEntry.texelType;
+                            var newWidth = Math.max(srcEntry.getWidth(), 1);
+                            var newHeight = Math.max(srcEntry.getHeight(), 1);
+                            var newFormatType = d.formatType || srcEntry.getFormatType();
                             var newSamplerConfig = d.samplerConfig || srcEntry.getSamplerConfig();
-                            dataEntry._createImage(newWidth, newHeight, newFormat, newType, newSamplerConfig);
+                            dataEntry._createImage(newWidth, newHeight, newFormatType, newSamplerConfig);
                         }
                         else
-                            throw new Error("Unknown texture input parameter '" + d.sizeof + "' in operator '"+operator.name+"'");
+                            throw new Error("Unknown texture input parameter '" + d.sizeof+"' in operator '"+operator.name+"'");
                     } else
                         throw new Error("Cannot create texture. Use customAlloc or sizeof parameter attribute");
                 } else {
@@ -17111,12 +16985,10 @@ function initOperator(operator){
         this._inlineLoop = null;
     }
 
-    Xflow.SingleProgram.prototype.run = function(programData, asyncCallback){
+    Xflow.SingleProgram.prototype.run = function(programData){
         var operatorData = prepareOperatorData(this.list, 0, programData);
 
-        if(asyncCallback)
-            applyAsyncOperator(this.entry, programData, operatorData, asyncCallback);
-        else if(this.operator.evaluate_core){
+        if(this.operator.evaluate_core){
             applyCoreOperation(this, programData, operatorData);
         }
         else{
@@ -17128,17 +17000,6 @@ function initOperator(operator){
         var args = assembleFunctionArgs(entry, programData);
         args.push(operatorData);
         entry.operator.evaluate.apply(operatorData, args);
-        handlePostProcessOutput(entry, programData, args, false);
-    }
-
-    function applyAsyncOperator(entry, programData, operatorData, asyncCallback){
-        var args = assembleFunctionArgs(entry, programData, true);
-        args.push(operatorData);
-        args.push(function(){
-            handlePostProcessOutput(entry, programData, args, true);
-            asyncCallback();
-        });
-        entry.operator.evaluate_async.apply(operatorData, args);
     }
 
     function applyCoreOperation(program, programData, operatorData){
@@ -17233,41 +17094,17 @@ function initOperator(operator){
         return data;
     }
 
-    function assembleFunctionArgs(entry, programData, async){
+    function assembleFunctionArgs(entry, programData){
         var args = [];
         var outputs = entry.operator.outputs;
         for(var i = 0; i < outputs.length; ++i){
-            if(outputs[i].noAlloc){
-                args.push({assign: null});
-            }
-            else{
-                var dataSlot = programData.outputs[entry.getOutputIndex(i)];
-                var dataEntry = async ? dataSlot.asyncDataEntry : dataSlot.dataEntry;
-                args.push(dataEntry ? dataEntry.getValue() : null);
-            }
+            var d = outputs[i];
+            var dataEntry = programData.outputs[entry.getOutputIndex(i)].dataEntry;
+            args.push(dataEntry ? dataEntry.getValue() : null);
         }
         addInputToArgs(args, entry, programData);
         return args;
     }
-    function handlePostProcessOutput(entry, programData, parameters, async){
-        var outputs = entry.operator.outputs;
-        for(var i = 0; i < outputs.length; ++i){
-            var dataSlot = programData.outputs[entry.getOutputIndex(i)];
-            if(outputs[i].noAlloc){
-                var dataEntry = async ? dataSlot.asyncDataEntry : dataSlot.dataEntry;
-                if(dataEntry.type == Xflow.DATA_TYPE.TEXTURE ){
-                    dataEntry._setImage(parameters[i].assign);
-                }
-                else{
-                    dataEntry._setValue(parameters[i].assign);
-                }
-            }
-            if(async){
-                dataSlot.swapAsync();
-            }
-        }
-    }
-
 
     function addInputToArgs(args, entry, programData){
         var mapping = entry.operator.mapping;
@@ -17279,8 +17116,7 @@ function initOperator(operator){
     }
 
 
-}());
-(function(){
+}());(function(){
 
 //----------------------------------------------------------------------------------------------------------------------
 // Xflow.OperatorList
@@ -18215,16 +18051,6 @@ function initOperator(operator){
         result[1] = value1[1] - value2[1];
         result[2] = value1[2] - value2[2];
     }
-});Xflow.registerOperator("xflow.bufferSelect", {
-    outputs: [  {type: 'float3', name: 'result', noAlloc: true}],
-    params:  [  {type: 'float3', source: 'trueOption', array: true},
-                {type: 'float3', source: 'falseOption', array: true},
-                {type: 'bool', source: 'value', array: true}],
-    evaluate: function(result, falseOption, trueOption, value) {
-        result.assign = value[0] ? trueOption : falseOption;
-
-        return true;
-    }
 });Xflow.registerOperator("xflow.normalize", {
     outputs: [  {type: 'float3', name: 'result'}],
     params:  [  {type: 'float3', source: 'value'}],
@@ -18272,30 +18098,6 @@ Xflow.registerOperator("xflow.lerpSeq", {
         return true;
     }
 });
-
-
-Xflow.registerOperator("xflow.lerpSeqAsync", {
-    outputs: [  {type: 'float3', name: 'result'}],
-    params:  [  {type: 'float3', source: 'sequence'},
-        {type: 'float', source: 'key'}],
-    mapping: [  { name: 'value1', source: 'sequence', sequence: Xflow.SEQUENCE.PREV_BUFFER, keySource: 'key'},
-        { name: 'value2', source: 'sequence', sequence: Xflow.SEQUENCE.NEXT_BUFFER, keySource: 'key'},
-        { name: 'weight', source: 'sequence', sequence: Xflow.SEQUENCE.LINEAR_WEIGHT, keySource: 'key'}],
-    evaluate_async: function(result, value1, value2, weight, info, callback){
-        var i = info.iterateCount, off0, off1, off2;
-        while(i--){
-            off0 = (info.iterFlag[0] ? i : 0)*3;
-            off1 = (info.iterFlag[1] ? i : 0)*3;
-            off2 = info.iterFlag[2] ? i : 0;
-            var invWeight = 1 - weight[off2];
-            result[i*3] = invWeight*value1[off0] + weight[off2]*value2[off1];
-            result[i*3+1] = invWeight*value1[off0+1] + weight[off2]*value2[off1+1];
-            result[i*3+2] = invWeight*value1[off0+2] + weight[off2]*value2[off1+2];
-        }
-        window.setTimeout(callback, 200);
-    }
-});
-
 
 Xflow.registerOperator("xflow.lerpKeys", {
     outputs: [  {type: 'float3', name: 'result'}],
@@ -18415,90 +18217,90 @@ Xflow.registerOperator("xflow.slerpKeys", {
     }
     /*
     evaluate_parallel: function( translation,rotation,scale,center,scaleOrientation) {
-         var count = translation ? translation.length / 3 :
+    	 var count = translation ? translation.length / 3 :
             rotation ? rotation.length / 4 :
             scale ? scale.length / 3 :
             center ? center.length / 3 :
             scaleOrientation ? scaleOrientation / 4: 0;
-        if(!count)
+    	if(!count)
             throw ("createTransform: No input found");
 
         if (!this.elementalFunc) {
-            this.elementalFunc = function(index, translation,rotation) {
-                var off4 = index * 4;
-                var off3 = index * 3;
-                var dest = [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
+	        this.elementalFunc = function(index, translation,rotation) {
+	            var off4 = index * 4;
+	            var off3 = index * 3;
+	            var dest = [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
 
-                //Translation
-                dest[12] = translation[off3+0];
-                dest[13] = translation[off3+1];
-                dest[14] = translation[off3+2];
+	            //Translation
+	            dest[12] = translation[off3+0];
+	            dest[13] = translation[off3+1];
+	            dest[14] = translation[off3+2];
 
-                //Rotation to matrix
-                var x = rotation[off4+1], y = rotation[off4+2], z = rotation[off4+3], w = -rotation[off4];
+	            //Rotation to matrix
+	            var x = rotation[off4+1], y = rotation[off4+2], z = rotation[off4+3], w = -rotation[off4];
 
-                var x2 = x + x;
-                var y2 = y + y;
-                var z2 = z + z;
+	            var x2 = x + x;
+	            var y2 = y + y;
+	            var z2 = z + z;
 
-                var xx = x*x2;
-                var xy = x*y2;
-                var xz = x*z2;
+	            var xx = x*x2;
+	            var xy = x*y2;
+	            var xz = x*z2;
 
-                var yy = y*y2;
-                var yz = y*z2;
-                var zz = z*z2;
+	            var yy = y*y2;
+	            var yz = y*z2;
+	            var zz = z*z2;
 
-                var wx = w*x2;
-                var wy = w*y2;
-                var wz = w*z2;
+	            var wx = w*x2;
+	            var wy = w*y2;
+	            var wz = w*z2;
 
-                var rotMat = [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,1];
-                rotMat[0] = 1 - (yy + zz);
-                rotMat[1] = xy - wz;
-                rotMat[2] = xz + wy;
-                rotMat[3] = 0;
+	            var rotMat = [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,1];
+	            rotMat[0] = 1 - (yy + zz);
+	            rotMat[1] = xy - wz;
+	            rotMat[2] = xz + wy;
+	            rotMat[3] = 0;
 
-                rotMat[4] = xy + wz;
-                rotMat[5] = 1 - (xx + zz);
-                rotMat[6] = yz - wx;
-                rotMat[7] = 0;
+	            rotMat[4] = xy + wz;
+	            rotMat[5] = 1 - (xx + zz);
+	            rotMat[6] = yz - wx;
+	            rotMat[7] = 0;
 
-                rotMat[8] = xz - wy;
-                rotMat[9] = yz + wx;
-                rotMat[10] = 1 - (xx + yy);
-                rotMat[11] = 0;
+	            rotMat[8] = xz - wy;
+	            rotMat[9] = yz + wx;
+	            rotMat[10] = 1 - (xx + yy);
+	            rotMat[11] = 0;
 
-                //Combine translation and rotation (is the kernel faster if we cache the matrix values?)
-                var a00 = dest[0], a01 = dest[1], a02 = dest[2], a03 = dest[3];
-                var a10 = dest[4], a11 = dest[5], a12 = dest[6], a13 = dest[7];
-                var a20 = dest[8], a21 = dest[9], a22 = dest[10], a23 = dest[11];
-                var a30 = dest[12], a31 = dest[13], a32 = dest[14], a33 = dest[15];
+	            //Combine translation and rotation (is the kernel faster if we cache the matrix values?)
+	            var a00 = dest[0], a01 = dest[1], a02 = dest[2], a03 = dest[3];
+	            var a10 = dest[4], a11 = dest[5], a12 = dest[6], a13 = dest[7];
+	            var a20 = dest[8], a21 = dest[9], a22 = dest[10], a23 = dest[11];
+	            var a30 = dest[12], a31 = dest[13], a32 = dest[14], a33 = dest[15];
 
-                var b00 = rotMat[0], b01 = rotMat[1], b02 = rotMat[2], b03 = rotMat[3];
-                var b10 = rotMat[4], b11 = rotMat[5], b12 = rotMat[6], b13 = rotMat[7];
-                var b20 = rotMat[8], b21 = rotMat[9], b22 = rotMat[10], b23 = rotMat[11];
-                var b30 = rotMat[12], b31 = rotMat[13], b32 = rotMat[14], b33 = rotMat[15];
+	            var b00 = rotMat[0], b01 = rotMat[1], b02 = rotMat[2], b03 = rotMat[3];
+	            var b10 = rotMat[4], b11 = rotMat[5], b12 = rotMat[6], b13 = rotMat[7];
+	            var b20 = rotMat[8], b21 = rotMat[9], b22 = rotMat[10], b23 = rotMat[11];
+	            var b30 = rotMat[12], b31 = rotMat[13], b32 = rotMat[14], b33 = rotMat[15];
 
-                dest[0] = b00*a00 + b01*a10 + b02*a20 + b03*a30;
-                dest[1] = b00*a01 + b01*a11 + b02*a21 + b03*a31;
-                dest[2] = b00*a02 + b01*a12 + b02*a22 + b03*a32;
-                dest[3] = b00*a03 + b01*a13 + b02*a23 + b03*a33;
-                dest[4] = b10*a00 + b11*a10 + b12*a20 + b13*a30;
-                dest[5] = b10*a01 + b11*a11 + b12*a21 + b13*a31;
-                dest[6] = b10*a02 + b11*a12 + b12*a22 + b13*a32;
-                dest[7] = b10*a03 + b11*a13 + b12*a23 + b13*a33;
-                dest[8] = b20*a00 + b21*a10 + b22*a20 + b23*a30;
-                dest[9] = b20*a01 + b21*a11 + b22*a21 + b23*a31;
-                dest[10] = b20*a02 + b21*a12 + b22*a22 + b23*a32;
-                dest[11] = b20*a03 + b21*a13 + b22*a23 + b23*a33;
-                dest[12] = b30*a00 + b31*a10 + b32*a20 + b33*a30;
-                dest[13] = b30*a01 + b31*a11 + b32*a21 + b33*a31;
-                dest[14] = b30*a02 + b31*a12 + b32*a22 + b33*a32;
-                dest[15] = b30*a03 + b31*a13 + b32*a23 + b33*a33;
+	            dest[0] = b00*a00 + b01*a10 + b02*a20 + b03*a30;
+	            dest[1] = b00*a01 + b01*a11 + b02*a21 + b03*a31;
+	            dest[2] = b00*a02 + b01*a12 + b02*a22 + b03*a32;
+	            dest[3] = b00*a03 + b01*a13 + b02*a23 + b03*a33;
+	            dest[4] = b10*a00 + b11*a10 + b12*a20 + b13*a30;
+	            dest[5] = b10*a01 + b11*a11 + b12*a21 + b13*a31;
+	            dest[6] = b10*a02 + b11*a12 + b12*a22 + b13*a32;
+	            dest[7] = b10*a03 + b11*a13 + b12*a23 + b13*a33;
+	            dest[8] = b20*a00 + b21*a10 + b22*a20 + b23*a30;
+	            dest[9] = b20*a01 + b21*a11 + b22*a21 + b23*a31;
+	            dest[10] = b20*a02 + b21*a12 + b22*a22 + b23*a32;
+	            dest[11] = b20*a03 + b21*a13 + b22*a23 + b23*a33;
+	            dest[12] = b30*a00 + b31*a10 + b32*a20 + b33*a30;
+	            dest[13] = b30*a01 + b31*a11 + b32*a21 + b33*a31;
+	            dest[14] = b30*a02 + b31*a12 + b32*a22 + b33*a32;
+	            dest[15] = b30*a03 + b31*a13 + b32*a23 + b33*a33;
 
-                return dest;
-            };
+	            return dest;
+	        };
         }
 
         var tmp = new ParallelArray(
@@ -18535,90 +18337,90 @@ Xflow.registerOperator("xflow.slerpKeys", {
 
         //this.parallel_data = new ParallelArray(result).partition(16);
         /*
-        var count = translation ? translation.length / 3 :
+    	var count = translation ? translation.length / 3 :
             rotation ? rotation.length / 4 :
             scale ? scale.length / 3 :
             center ? center.length / 3 :
             scaleOrientation ? scaleOrientation / 4: 0;
-        if(!count)
+    	if(!count)
             throw ("createTransform: No input found");
 
         if (!this.elementalFunc) {
-            this.elementalFunc = function(index, translation,rotation) {
-                var off4 = index * 4;
-                var off3 = index * 3;
-                var dest = [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
+	        this.elementalFunc = function(index, translation,rotation) {
+	            var off4 = index * 4;
+	            var off3 = index * 3;
+	            var dest = [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
 
-                //Translation
-                dest[12] = translation[off3+0];
-                dest[13] = translation[off3+1];
-                dest[14] = translation[off3+2];
+	            //Translation
+	            dest[12] = translation[off3+0];
+	            dest[13] = translation[off3+1];
+	            dest[14] = translation[off3+2];
 
-                //Rotation to matrix
-                var x = rotation[off4+1], y = rotation[off4+2], z = rotation[off4+3], w = -rotation[off4];
+	            //Rotation to matrix
+	            var x = rotation[off4+1], y = rotation[off4+2], z = rotation[off4+3], w = -rotation[off4];
 
-                var x2 = x + x;
-                var y2 = y + y;
-                var z2 = z + z;
+	            var x2 = x + x;
+	            var y2 = y + y;
+	            var z2 = z + z;
 
-                var xx = x*x2;
-                var xy = x*y2;
-                var xz = x*z2;
+	            var xx = x*x2;
+	            var xy = x*y2;
+	            var xz = x*z2;
 
-                var yy = y*y2;
-                var yz = y*z2;
-                var zz = z*z2;
+	            var yy = y*y2;
+	            var yz = y*z2;
+	            var zz = z*z2;
 
-                var wx = w*x2;
-                var wy = w*y2;
-                var wz = w*z2;
+	            var wx = w*x2;
+	            var wy = w*y2;
+	            var wz = w*z2;
 
-                var rotMat = [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,1];
-                rotMat[0] = 1 - (yy + zz);
-                rotMat[1] = xy - wz;
-                rotMat[2] = xz + wy;
-                rotMat[3] = 0;
+	            var rotMat = [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,1];
+	            rotMat[0] = 1 - (yy + zz);
+	            rotMat[1] = xy - wz;
+	            rotMat[2] = xz + wy;
+	            rotMat[3] = 0;
 
-                rotMat[4] = xy + wz;
-                rotMat[5] = 1 - (xx + zz);
-                rotMat[6] = yz - wx;
-                rotMat[7] = 0;
+	            rotMat[4] = xy + wz;
+	            rotMat[5] = 1 - (xx + zz);
+	            rotMat[6] = yz - wx;
+	            rotMat[7] = 0;
 
-                rotMat[8] = xz - wy;
-                rotMat[9] = yz + wx;
-                rotMat[10] = 1 - (xx + yy);
-                rotMat[11] = 0;
+	            rotMat[8] = xz - wy;
+	            rotMat[9] = yz + wx;
+	            rotMat[10] = 1 - (xx + yy);
+	            rotMat[11] = 0;
 
-                //Combine translation and rotation (is the kernel faster if we cache the matrix values?)
-                var a00 = dest[0], a01 = dest[1], a02 = dest[2], a03 = dest[3];
-                var a10 = dest[4], a11 = dest[5], a12 = dest[6], a13 = dest[7];
-                var a20 = dest[8], a21 = dest[9], a22 = dest[10], a23 = dest[11];
-                var a30 = dest[12], a31 = dest[13], a32 = dest[14], a33 = dest[15];
+	            //Combine translation and rotation (is the kernel faster if we cache the matrix values?)
+	            var a00 = dest[0], a01 = dest[1], a02 = dest[2], a03 = dest[3];
+	            var a10 = dest[4], a11 = dest[5], a12 = dest[6], a13 = dest[7];
+	            var a20 = dest[8], a21 = dest[9], a22 = dest[10], a23 = dest[11];
+	            var a30 = dest[12], a31 = dest[13], a32 = dest[14], a33 = dest[15];
 
-                var b00 = rotMat[0], b01 = rotMat[1], b02 = rotMat[2], b03 = rotMat[3];
-                var b10 = rotMat[4], b11 = rotMat[5], b12 = rotMat[6], b13 = rotMat[7];
-                var b20 = rotMat[8], b21 = rotMat[9], b22 = rotMat[10], b23 = rotMat[11];
-                var b30 = rotMat[12], b31 = rotMat[13], b32 = rotMat[14], b33 = rotMat[15];
+	            var b00 = rotMat[0], b01 = rotMat[1], b02 = rotMat[2], b03 = rotMat[3];
+	            var b10 = rotMat[4], b11 = rotMat[5], b12 = rotMat[6], b13 = rotMat[7];
+	            var b20 = rotMat[8], b21 = rotMat[9], b22 = rotMat[10], b23 = rotMat[11];
+	            var b30 = rotMat[12], b31 = rotMat[13], b32 = rotMat[14], b33 = rotMat[15];
 
-                dest[0] = b00*a00 + b01*a10 + b02*a20 + b03*a30;
-                dest[1] = b00*a01 + b01*a11 + b02*a21 + b03*a31;
-                dest[2] = b00*a02 + b01*a12 + b02*a22 + b03*a32;
-                dest[3] = b00*a03 + b01*a13 + b02*a23 + b03*a33;
-                dest[4] = b10*a00 + b11*a10 + b12*a20 + b13*a30;
-                dest[5] = b10*a01 + b11*a11 + b12*a21 + b13*a31;
-                dest[6] = b10*a02 + b11*a12 + b12*a22 + b13*a32;
-                dest[7] = b10*a03 + b11*a13 + b12*a23 + b13*a33;
-                dest[8] = b20*a00 + b21*a10 + b22*a20 + b23*a30;
-                dest[9] = b20*a01 + b21*a11 + b22*a21 + b23*a31;
-                dest[10] = b20*a02 + b21*a12 + b22*a22 + b23*a32;
-                dest[11] = b20*a03 + b21*a13 + b22*a23 + b23*a33;
-                dest[12] = b30*a00 + b31*a10 + b32*a20 + b33*a30;
-                dest[13] = b30*a01 + b31*a11 + b32*a21 + b33*a31;
-                dest[14] = b30*a02 + b31*a12 + b32*a22 + b33*a32;
-                dest[15] = b30*a03 + b31*a13 + b32*a23 + b33*a33;
+	            dest[0] = b00*a00 + b01*a10 + b02*a20 + b03*a30;
+	            dest[1] = b00*a01 + b01*a11 + b02*a21 + b03*a31;
+	            dest[2] = b00*a02 + b01*a12 + b02*a22 + b03*a32;
+	            dest[3] = b00*a03 + b01*a13 + b02*a23 + b03*a33;
+	            dest[4] = b10*a00 + b11*a10 + b12*a20 + b13*a30;
+	            dest[5] = b10*a01 + b11*a11 + b12*a21 + b13*a31;
+	            dest[6] = b10*a02 + b11*a12 + b12*a22 + b13*a32;
+	            dest[7] = b10*a03 + b11*a13 + b12*a23 + b13*a33;
+	            dest[8] = b20*a00 + b21*a10 + b22*a20 + b23*a30;
+	            dest[9] = b20*a01 + b21*a11 + b22*a21 + b23*a31;
+	            dest[10] = b20*a02 + b21*a12 + b22*a22 + b23*a32;
+	            dest[11] = b20*a03 + b21*a13 + b22*a23 + b23*a33;
+	            dest[12] = b30*a00 + b31*a10 + b32*a20 + b33*a30;
+	            dest[13] = b30*a01 + b31*a11 + b32*a21 + b33*a31;
+	            dest[14] = b30*a02 + b31*a12 + b32*a22 + b33*a32;
+	            dest[15] = b30*a03 + b31*a13 + b32*a23 + b33*a33;
 
-                return dest;
-            };
+	            return dest;
+	        };
         }
 
         var tmp = new ParallelArray(
@@ -18628,7 +18430,7 @@ Xflow.registerOperator("xflow.slerpKeys", {
                 rotation
         );
         this.result.result = tmp.flatten();
-    */
+	*/
         return true;
     }
 });Xflow.registerOperator("xflow.mul", {
@@ -20036,11 +19838,11 @@ var c_CubeIndex = [
  * Grid Generation
  */
 Xflow.registerOperator("xflow.debug.createSkinCubes", {
-    outputs: [  {type: 'int', name: 'index', customAlloc: true},
+    outputs: [	{type: 'int', name: 'index', customAlloc: true},
                 {type: 'float3', name: 'position', customAlloc: true},
-                {type: 'float3', name: 'normal', customAlloc: true},
-                {type: 'int4', name: 'boneIndices', customAlloc: true},
-                {type: 'float4', name: 'boneWeights', customAlloc: true}],
+				{type: 'float3', name: 'normal', customAlloc: true},
+				{type: 'int4', name: 'boneIndices', customAlloc: true},
+				{type: 'float4', name: 'boneWeights', customAlloc: true}],
     params:  [{type: 'float4x4', source: 'bindTransforms', array: true},
               {type: 'float', source: 'size', array: true, optional: true}],
     alloc: function(sizes, bindTransforms)
@@ -20053,13 +19855,13 @@ Xflow.registerOperator("xflow.debug.createSkinCubes", {
         sizes['index'] = s * 6 * 6;
     },
     evaluate: function(index, position, normal, boneIdx, boneWeight, bindTransforms, size) {
-        var cubeCount = bindTransforms.length / 16;
-        var size = (size && size[0] || 1) / 2;
+		var cubeCount = bindTransforms.length / 16;
+		var size = (size && size[0] || 1) / 2;
 
         var tmpPosition = XML3D.math.vec3.create(),
             tmpNormal = XML3D.math.vec3.create();
 
-        for(var i = 0; i < cubeCount; ++i){
+		for(var i = 0; i < cubeCount; ++i){
             for(var j = 0; j < 6; ++j){
                 for(var k = 0; k < 4; k++){
                     var localIdx = j*4+ k, globalIdx = i*6*4 + localIdx;
@@ -20086,52 +19888,13 @@ Xflow.registerOperator("xflow.debug.createSkinCubes", {
                     index[globalIndexIdx+k] = i*6*4 + c_CubeIndex[j][k];
                 }
             }
-        }
-        // We are done!
-        position = position;
-    }
+		}
+		// We are done!
+		position = position;
+	}
 });
 
-}());Xflow.registerOperator("xflow.rgbePNGtoFloat", {
-    outputs: [ {type: 'texture', name : 'result', customAlloc: true } ],
-    params:  [
-        {type: 'texture', source : 'image'}
-    ],
-    alloc: function (sizes, image) {
-        var samplerConfig = new Xflow.SamplerConfig;
-        samplerConfig.setDefaults();
-        samplerConfig.minFilter = Xflow.TEX_FILTER_TYPE.NEAREST;
-        samplerConfig.magFilter = Xflow.TEX_FILTER_TYPE.NEAREST;
-        sizes["result"] = {
-            imageFormat : {
-                width: image.width,
-                height: image.height,
-                texelType: Xflow.TEXTURE_TYPE.FLOAT,
-                texelFormat: Xflow.TEXTURE_FORMAT.RGB
-            },
-            samplerConfig: samplerConfig
-        }
-    },
-
-    evaluate: function(result, image) {
-        for (var idx = 0; idx < image.data.length; idx += 4) {
-            var rgbe = image.data.subarray(idx, idx + 4);
-            var f = 0.0;
-            var e = rgbe[3];
-
-            if (e > 0.0)
-                f = Math.pow(2.0, e - (128.0 + 8.0));
-
-            var rgb = new Float32Array(3);
-            rgb[0] = rgbe[0] * f;
-            rgb[1] = rgbe[1] * f;
-            rgb[2] = rgbe[2] * f;
-            result.data.set(rgb, idx / 4 * 3);
-        }
-        return true;
-    }
-});
-(function() {
+}());(function() {
 
 //----------------------------------------------------------------------------------------------------------------------
 // XML3D.base.Asset
@@ -21292,6 +21055,7 @@ XML3D.data.AssetMeshAdapter.prototype.notifyChanged = function(evt) {
             return WebGLRenderingContext.CLAMP_TO_EDGE;
         if (modeStr == "repeat")
             return WebGLRenderingContext.REPEAT;
+        return WebGLRenderingContext.CLAMP_TO_EDGE;
     };
 
     var filterToGL = function(modeStr) {
@@ -21299,14 +21063,11 @@ XML3D.data.AssetMeshAdapter.prototype.notifyChanged = function(evt) {
             return WebGLRenderingContext.NEAREST;
         if (modeStr == "linear")
             return WebGLRenderingContext.LINEAR;
-        if (modeStr == "nearest-mipmap-nearest")
-            return WebGLRenderingContext.NEAREST_MIPMAP_NEAREST;
-        if (modeStr == "linear-mipmap-nearest")
+        if (modeStr == "mipmap_linear")
             return WebGLRenderingContext.LINEAR_MIPMAP_NEAREST;
-        if (modeStr == "nearest-mipmap-linear")
-            return WebGLRenderingContext.NEAREST_MIPMAP_LINEAR;
-        if (modeStr == "linear-mipmap-linear")
-            return WebGLRenderingContext.LINEAR_MIPMAP_LINEAR;
+        if (modeStr == "mipmap_nearest")
+            return WebGLRenderingContext.NEAREST_MIPMAP_NEAREST;
+        return WebGLRenderingContext.LINEAR;
     };
 
     var TextureDataAdapter = function(factory, node) {
@@ -21328,18 +21089,13 @@ XML3D.data.AssetMeshAdapter.prototype.notifyChanged = function(evt) {
         config.minFilter = filterToGL(node.filterMin);
         config.magFilter = filterToGL(node.filterMag);
         config.textureType = Xflow.TEX_TYPE.TEXTURE_2D;
-        config.generateMipMap = this.shouldGenerateMipMaps(config.minFilter, config.magFilter);
+        config.generateMipMap = 1;
 
         var imageAdapter = this.factory.getAdapter(this.node.firstElementChild, XML3D.data.XML3DDataAdapterFactory.prototype);
         if(imageAdapter) {
             imageAdapter.setTextureEntry(entry);
         }
         return entry;
-    };
-
-    TextureDataAdapter.prototype.shouldGenerateMipMaps = function(minFilter, magFilter) {
-        return (minFilter != WebGLRenderingContext.NEAREST && minFilter != WebGLRenderingContext.LINEAR) ||
-            (magFilter != WebGLRenderingContext.NEAREST && magFilter != WebGLRenderingContext.LINEAR);
     };
 
     TextureDataAdapter.prototype.createXflowNode = function() {
@@ -21404,29 +21160,29 @@ XML3D.data.AssetMeshAdapter.prototype.notifyChanged = function(evt) {
     var TransformDataAdapter = function(factory, node) {
         XML3D.base.NodeAdapter.call(this, factory, node);
         this.isValid = true;
-        this.needsUpdate = true;
+		this.needsUpdate = true;
     };
 
     XML3D.createClass(TransformDataAdapter, XML3D.base.NodeAdapter);
     var p = TransformDataAdapter.prototype;
 
-    var IDENT_MAT = XML3D.math.mat4.identity(XML3D.math.mat4.create());
+	var IDENT_MAT = XML3D.math.mat4.identity(XML3D.math.mat4.create());
 
-    p.init = function() {
-        // Create all matrices, no valid values yet
-        this.matrix = XML3D.math.mat4.create();
-        this.transform = {
-                translate              : XML3D.math.mat4.create(),
-                scale                  : XML3D.math.mat4.create(),
-                scaleOrientationInv    : XML3D.math.mat4.create(),
-                center                 : XML3D.math.mat4.create(),
+	p.init = function() {
+	    // Create all matrices, no valid values yet
+	    this.matrix = XML3D.math.mat4.create();
+	    this.transform = {
+	            translate              : XML3D.math.mat4.create(),
+	            scale                  : XML3D.math.mat4.create(),
+	            scaleOrientationInv    : XML3D.math.mat4.create(),
+	            center                 : XML3D.math.mat4.create(),
                 centerInverse          : XML3D.math.mat4.create()
-                //rotation               : XML3D.math.mat4.create()
-        };
+	            //rotation               : XML3D.math.mat4.create()
+	    };
         this.needsUpdate = true;
-    };
+	};
 
-    p.updateMatrix = function() {
+	p.updateMatrix = function() {
         var n = this.node,
             transform = this.transform,
             transVec = n.translation._data,
@@ -21457,15 +21213,15 @@ XML3D.data.AssetMeshAdapter.prototype.notifyChanged = function(evt) {
         this.needsUpdate = false;
     };
 
-    p.getMatrix = function() {
-        this.needsUpdate && this.updateMatrix();
-        return this.matrix;
-    };
+	p.getMatrix = function() {
+	    this.needsUpdate && this.updateMatrix();
+	    return this.matrix;
+	};
 
 
     p.notifyChanged = function(e) {
         if (e.type == 1) {
-            this.needsUpdate = true;
+			this.needsUpdate = true;
         } else if (e.type == 2) {
             this.dispose();
         }
@@ -22395,7 +22151,7 @@ XML3D.webgl.MAXFPS = 30;
      * @return {vec3|null} The world space position on the object's surface at the given coordinates
      */
     CanvasHandler.prototype.getWorldSpacePositionByPoint = function(canvasX, canvasY) {
-        return this.renderer.getWorldSpacePositionByPoint(canvasX, canvasY);
+	    return this.renderer.getWorldSpacePositionByPoint(canvasX, canvasY);
     };
 
     CanvasHandler.prototype.canvasSizeChanged = function() {
@@ -22611,7 +22367,7 @@ XML3D.webgl.stopEvent = function(ev) {
                 } else if ( touchEvent.initTouchEvent.length == 12 ) { //firefox
                     touchEvent.initTouchEvent(data.type, data.bubbles, data.cancelable, data.view,
                         data.detail, data.ctrlKey, data.altKey, data.shiftKey, data.metaKey, data.touches,
-                        data.targetTouches, data.changedTouches);
+                        data.targetTouches,	data.changedTouches);
                 } else { //iOS length = 18
                     touchEvent.initTouchEvent(data.type, data.bubbles, data.cancelable, data.view,
                         data.detail, data.screenX, data.screenY, data.pageX, data.pageY, data.ctrlKey,
@@ -24114,10 +23870,7 @@ XML3D.webgl.stopEvent = function(ev) {
         },
 
         removeChild: function(child) {
-            var index = this.children.indexOf(child);
-            if(index != -1) {
-                this.children.splice(index, 1);
-            }
+            this.children.splice(this.children.indexOf(child), 1);
             this.scene.dispatchEvent({type : webgl.Scene.EVENT_TYPE.SCENE_STRUCTURE_CHANGED, removedChild: child});
         },
 
@@ -24215,9 +23968,7 @@ XML3D.webgl.stopEvent = function(ev) {
     /** @const */
     var LIGHT_DEFAULT_ATTENUATION = XML3D.math.vec3.fromValues(0,0,1);
     /** @const */
-    var POINT_LIGHT_DEFAULT_SHADOW_BIAS = 0.0001;
-    var SPOT_LIGHT_DEFAULT_SHADOW_BIAS = 0.001;
-    var DIRECTIONAL_LIGHT_DEFAULT_SHADOW_BIAS = 0.0045;
+    var LIGHT_DEFAULT_SHADOW_BIAS = 0.001;
     /** @const */
     var SPOTLIGHT_DEFAULT_FALLOFFANGLE = Math.PI / 4.0;
     /** @const */
@@ -24254,7 +24005,6 @@ XML3D.webgl.stopEvent = function(ev) {
             type : light.type || "directional",
             data : light.data
         }
-
         this.intensity   = XML3D.math.vec3.clone(LIGHT_DEFAULT_INTENSITY);
         this.srcPosition    = XML3D.math.vec3.fromValues(0,0,0);
         this.srcDirection   = XML3D.math.vec3.clone(XML3D_DIRECTIONALLIGHT_DEFAULT_DIRECTION);
@@ -24283,40 +24033,33 @@ XML3D.webgl.stopEvent = function(ev) {
     XML3D.extend(RenderLight.prototype, {
 
         getFrustum: function(aspect) {
-            var orthogonal = this.light.type == "directional";
+            return new XML3D.webgl.Frustum(1.0, 200.0, 0, this.fallOffAngle*2, aspect)
             var t_mat = XML3D.math.mat4.create();
             var bb = new XML3D.math.bbox.create();
             this.scene.getBoundingBox(bb);
 
             if (XML3D.math.bbox.isEmpty(bb)) {
-                return new XML3D.webgl.Frustum(1.0, 110.0, 0, this.fallOffAngle*2, aspect, orthogonal)
+                return new XML3D.webgl.Frustum(1.0, 110.0, 0, this.fallOffAngle*2, aspect)
             }
             this.getWorldToLightMatrix(t_mat);
 
             XML3D.math.bbox.transform(bb, t_mat, bb);
 
-            var near = 1.0,
-                far  = 2.0;
-            if(this.light.type == "point") {
-                //TODO optimise near ?
-                near = 1.0;
-                far = Math.max(Math.abs(bb[0]),Math.abs(bb[1]), Math.abs(bb[2]), Math.abs(bb[3]), Math.abs(bb[4]), Math.abs(bb[5]));
-            }else {
-                near = -bb[5];
-                far = -bb[2];
-            }
-            var expand = Math.max((far - near) * 0.30, 0.05);
+            var near = -bb[5],
+                far = -bb[2],
+                expand = Math.max((far - near) * 0.30, 0.05);
 
             // Expand the view frustum a bit to ensure 2D objects parallel to the camera are rendered
             far += expand;
             near -= expand;
-            return new XML3D.webgl.Frustum(1.0, far, 0, this.fallOffAngle*2, aspect, orthogonal);
+            return new XML3D.webgl.Frustum(1.0, far, 0, this.fallOffAngle*2, aspect);
         },
 
         addLightToScene : function() {
             var lightEntry = this.scene.lights[this.light.type];
             if (Array.isArray(lightEntry)) {
                 lightEntry.push(this);
+                this.updateWorldMatrix(); // Implicitly fills light position/direction
                 this.lightStructureChanged(false);
             } else {
                 XML3D.debug.logError("Unsupported light shader script: urn:xml3d:lightshader:" + this.light.type);
@@ -24374,29 +24117,33 @@ XML3D.webgl.stopEvent = function(ev) {
             if (target["on"]) {
                 target["on"][offset] = this.visible;
             }
-            var result  = this.light.data ? this.lightParameterRequest.getResult() : null;
+            var result;
             var data;
             if (target["softness"]) {
-                data = result ? result.getOutputData("softness") : null;
-                target["softness"][offset] = data ? data.getValue()[0] : SPOTLIGHT_DEFAULT_SOFTNESS;
+                target["softness"][offset] = SPOTLIGHT_DEFAULT_SOFTNESS;
+                if (this.light.data) {
+                    result = this.lightParameterRequest.getResult();
+                    data = result.getOutputData("softness");
+                    target["softness"][offset] = data ? data.getValue()[0] : SPOTLIGHT_DEFAULT_SOFTNESS;
+                }
             }
             if (target["falloffAngle"]) {
-                    data = result ? result.getOutputData("falloffAngle") : null;
+                target["falloffAngle"][offset] = SPOTLIGHT_DEFAULT_FALLOFFANGLE;
+                if (this.light.data) {
+                    result = this.lightParameterRequest.getResult();
+                    data = result.getOutputData("falloffAngle");
                     var fallOffAngle = data ? data.getValue()[0] : SPOTLIGHT_DEFAULT_FALLOFFANGLE;
                     target["falloffAngle"][offset] = fallOffAngle;
                     this.fallOffAngle = fallOffAngle;
+                }
             }
             if (target["castShadow"]) {
                 target["castShadow"][offset] = this.castShadow;
                 if(this.castShadow) {
                     if(target["shadowBias"]) {
+                        result = this.lightParameterRequest.getResult();
                         data = result.getOutputData("shadowBias");
-                        if(this.light.type == "point")
-                            target["shadowBias"][offset] = data ? data.getValue()[0] : POINT_LIGHT_DEFAULT_SHADOW_BIAS;
-                        else if(this.light.type == "spot")
-                            target["shadowBias"][offset] = data ? data.getValue()[0] : SPOT_LIGHT_DEFAULT_SHADOW_BIAS;
-                        else if(this.light.type == "directional")
-                            target["shadowBias"][offset] = data ? data.getValue()[0] : DIRECTIONAL_LIGHT_DEFAULT_SHADOW_BIAS;
+                        target["shadowBias"][offset] = data ? data.getValue()[0] : LIGHT_DEFAULT_SHADOW_BIAS;
                     }
                     if(target["lightMatrix"]) {
                         var tmp = XML3D.math.mat4.create();
@@ -24404,14 +24151,6 @@ XML3D.webgl.stopEvent = function(ev) {
                         var off16 = offset*16;
                         for(var i = 0; i < 16; i++) {
                             target["lightMatrix"][off16+i] = tmp[i];
-                        }
-                    }
-                    if(target["lightNearFar"]){
-                        var tmpFrustum = this.getFrustum(1);
-                        var tmp = XML3D.math.vec2.fromValues(tmpFrustum.nearPlane, tmpFrustum.farPlane);
-                        var off2 = offset*2;
-                        for(var i = 0; i < 2; i++) {
-                            target["lightNearFar"][off2+i] = tmp[i];
                         }
                     }
                 }
@@ -24450,59 +24189,6 @@ XML3D.webgl.stopEvent = function(ev) {
 
         getWorldToLightMatrix: function (mat4) {
             this.getWorldMatrix(mat4);
-
-            //calculate parameters for corresp. light type
-            if (this.light.type == "directional")
-            {
-                var bb = new XML3D.math.bbox.create();
-                this.scene.getBoundingBox(bb);
-                var bbSize = XML3D.math.vec3.create();
-                var bbCenter = XML3D.math.vec3.create();
-                var off = XML3D.math.vec3.create();
-                XML3D.math.bbox.center(bbCenter, bb);
-                XML3D.math.bbox.size(bbSize,bb);
-                var d = XML3D.math.vec3.len(bbSize); //diameter of bounding sphere of the scene
-                XML3D.math.vec3.scale(off, this.direction, -0.55*d); //enlarge a bit on the radius of the scene
-                this.position = XML3D.math.vec3.add(this.position, bbCenter, off);
-                this.fallOffAngle = 1.568;// set to a default of PI/2, recalculated later
-
-            } else if (this.light.type == "spot") {
-                //nothing to do
-            } else if (this.light.type == "point"){
-                //this.fallOffAngle = Math.PI/4.0;  //calculated on initialization of renderlight
-            } else {
-                XML3D.debug.logWarning("Light transformation not yet implemented for light type: " + this.light.type);
-            }
-
-            //create new transformation matrix depending on the updated parameters
-            XML3D.math.mat4.identity(mat4);
-            var lookat_mat = XML3D.math.mat4.create();
-            var top_vec = XML3D.math.vec3.fromValues(0.0, 1.0, 0.0);
-            if((this.direction[0] == 0.0) && (this.direction[2] == 0.0)) //check if top_vec colinear with direction
-                top_vec = XML3D.math.vec3.fromValues(0.0, 0.0, 1.0);
-            var up_vec  = XML3D.math.vec3.create();
-            var dir_len = XML3D.math.vec3.len(this.direction);
-            XML3D.math.vec3.scale(up_vec, this.direction, -XML3D.math.vec3.dot(top_vec, this.direction) / (dir_len * dir_len));
-            XML3D.math.vec3.add(up_vec, up_vec, top_vec);
-            XML3D.math.vec3.normalize(up_vec, up_vec);
-            XML3D.math.mat4.lookAt(lookat_mat, XML3D.math.vec3.fromValues(0.0, 0.0, 0.0), this.direction, up_vec);
-            XML3D.math.mat4.invert(lookat_mat, lookat_mat);
-            XML3D.math.mat4.translate(mat4, mat4, this.position);
-            XML3D.math.mat4.multiply(mat4, mat4, lookat_mat);
-           // this.setWorldMatrix(mat4);
-
-
-            if (this.light.type == "directional"){ //adjust foa for directional light - needs world Matrix
-                var bb = new XML3D.math.bbox.create();
-                this.scene.getBoundingBox(bb);
-                XML3D.math.bbox.transform(bb, mat4, bb);
-                var bbSize = XML3D.math.vec3.create();
-                XML3D.math.bbox.size(bbSize,bb);
-                var max = (bbSize[0]>bbSize[1])?bbSize[0]:bbSize[1];
-                max = 0.55*(max);//enlarge 10percent to make sure nothing gets cut off
-                this.fallOffAngle = Math.atan(max);
-            }
-
             XML3D.math.mat4.invert(mat4, mat4);
         },
 
@@ -24510,13 +24196,10 @@ XML3D.webgl.stopEvent = function(ev) {
             switch (this.light.type) {
                 case "directional":
                     XML3D.math.vec3.copy(this.direction, this.applyTransformDir(this.srcDirection, transform));
-                    XML3D.math.vec3.copy(this.position, this.applyTransform(this.srcPosition, transform));
-
                     break;
                 case "spot":
                     XML3D.math.vec3.copy(this.direction, this.applyTransformDir(this.srcDirection, transform));
                     XML3D.math.vec3.copy(this.position, this.applyTransform(this.srcPosition, transform));
-
                     break;
                 case "point":
                     XML3D.math.vec3.copy(this.position, this.applyTransform(this.srcPosition, transform));
@@ -24640,8 +24323,6 @@ XML3D.webgl.stopEvent = function(ev) {
             return function(aspect) {
                 if (this.projectionOverride) {
                     this.setProjectionMatrix(this.projectionOverride);
-                    // TODO: Correctly compute frustrum from projection matrix (if possible)
-                    this.frustum.setFrustum(1, 100000, 0, this.fieldOfView, 1);
                     return;
                 }
 
@@ -25039,7 +24720,6 @@ XML3D.webgl.stopEvent = function(ev) {
     EXTENSIONS.DEPTH_TEXTURE = 'WEBGL_depth_texture';
     EXTENSIONS.FLOAT_COLOR_BUFFER = 'WEBGL_color_buffer_float';
     EXTENSIONS.FLOAT_TEXTURES = 'OES_texture_float';
-    EXTENSIONS.UINT32_INDICES = 'OES_element_index_uint';
 
     XML3D.extend(GLContext.prototype, {
         getXflowEntryWebGlData: function (entry) {
@@ -25150,72 +24830,29 @@ XML3D.webgl.stopEvent = function(ev) {
         canvas.height = nextHighestPowerOfTwo(height);
 
         var context = canvas.getContext("2d");
-        if (image instanceof HTMLElement) {
-            context.drawImage(image, 0, 0, canvas.width, canvas.height);
-        }
-        else {
-            var tmpCanvas = document.createElement("canvas");
-            tmpCanvas.width = width;
-            tmpCanvas.height = height;
-            var tmpContext = tmpCanvas.getContext("2d");
-            var imageData = tmpContext.createImageData(width, height);
-            imageData.data.set(image.data);
-            tmpContext.putImageData(imageData, 0, 0);
-
-            context.drawImage(tmpCanvas, 0, 0, canvas.width, canvas.height);
-        }
-
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
         return canvas;
     };
 
-    var glTextureFormatFromXflow = function (format, gl) {
-        switch (format) {
-            case Xflow.TEXTURE_FORMAT.ALPHA:
-                return gl.ALPHA;
-            case Xflow.TEXTURE_FORMAT.RGB:
-                return gl.RGB;
-            case Xflow.TEXTURE_FORMAT.RGBA:
-                return gl.RGBA;
-            case Xflow.TEXTURE_FORMAT.LUMINANCE:
-                return gl.LUMINANCE;
-            case Xflow.TEXTURE_FORMAT.LUMINANCE_ALPHA:
-                return gl.LUMINANCE_ALPHA;
-            default:
-                throw new Error("Unsupported Texture Format!");
-        }
-    };
-
-    var glTextureTypeFromXflow = function (type, gl) {
-        switch (type) {
-            case Xflow.TEXTURE_TYPE.FLOAT:
-                return gl.FLOAT;
-            case Xflow.TEXTURE_TYPE.UBYTE:
-                return gl.UNSIGNED_BYTE;
-            case Xflow.TEXTURE_TYPE.USHORT_4_4_4_4:
-                return gl.UNSIGNED_SHORT_4_4_4_4;
-            case Xflow.TEXTURE_TYPE.USHORT_5_5_5_1:
-                return gl.UNSIGNED_SHORT_5_5_5_1;
-            case Xflow.TEXTURE_TYPE.USHORT_5_6_5:
-                return gl.GL_UNSIGNED_SHORT_5_6_5;
-            default:
-                throw new Error("Unsupported Texture Type!");
-        }
-    };
 
     XML3D.extend(GLTexture.prototype, {
         /**
          * @param {Xflow.TextureEntry} textureEntry
          */
         updateFromTextureEntry : function(textureEntry) {
-            if (!textureEntry.isLoading()) {
-                var gl = this.gl;
+            var img = textureEntry.getImage();
+            if(img) {
+                if(!this.handle) {
+                    this.handle = this.gl.createTexture();
+                }
                 this.set(textureEntry.getSamplerConfig());
-                var img = textureEntry.asGLTextureValue();
-                if (!img)
-                    return this.failed();
-                this.createOrUpdateTexture(img);
+                if(!textureEntry.isLoading()) {
+                    this.updateTex2DFromImage(img);
+                } else {
+                    this.loads();
+                }
             } else {
-                this.loads();
+                this.failed();
             }
         },
         /**
@@ -25231,6 +24868,33 @@ XML3D.webgl.stopEvent = function(ev) {
             (!isPowerOfTwo(width) || !isPowerOfTwo(height))
         },
 
+        /**
+         * @param {Image|HTMLVideoElement} image
+         */
+        updateTex2DFromImage : function(image) {
+            var gl = this.gl,
+            width = this.width = image.videoWidth || image.width,
+            height = this.height = image.videoHeight || image.height;
+            
+            gl.bindTexture(gl.TEXTURE_2D, this.handle);
+
+            if(this.needsScale(width, height)) {
+                image = scaleImage(image, width, height);
+            }
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, this.wrapS);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, this.wrapT);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, this.minFilter);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, this.magFilter);
+
+            if (this.generateMipMap) {
+                gl.generateMipmap(gl.TEXTURE_2D);
+            }
+            gl.bindTexture(gl.TEXTURE_2D, null);
+
+            this.created();
+        },
         bind : function(unit) {
             if (this.canBind()) {
                 this.gl.activeTexture(this.gl.TEXTURE0 + unit);
@@ -25249,52 +24913,6 @@ XML3D.webgl.stopEvent = function(ev) {
         canBind : function() {
             return this.current == GLTexture.State.READY;
         },
-        createOrUpdateTexture: function (texelSource) {
-            var gl = this.gl;
-
-            if (!this.handle)
-                this.handle = gl.createTexture();
-
-            this.updateTextureFromData(texelSource);
-        },
-        updateTextureFromData: function (texelSource) {
-            var gl = this.gl;
-            this.textureType = gl.TEXTURE_2D;
-
-            gl.bindTexture(gl.TEXTURE_2D, this.handle);
-
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, this.wrapS);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, this.wrapT);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, this.minFilter);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, this.magFilter);
-
-            var type = glTextureTypeFromXflow(texelSource.texelType, gl);
-            var format = glTextureFormatFromXflow(texelSource.texelFormat, gl);
-
-            var width = texelSource.width;
-            this.width = width;
-            var height = texelSource.height;
-            this.height = height;
-
-            if (this.generateMipMap && this.needsScale(width, height)) {
-                if (type === gl.FLOAT)
-                    throw new Error("Should generate MipMaps but texture data is float and not power of two in size!");
-                else
-                    texelSource = scaleImage(texelSource, width, height);
-            }
-
-            if (texelSource instanceof HTMLElement)
-                gl.texImage2D(gl.TEXTURE_2D, 0, format, format, type, texelSource);
-            else
-                gl.texImage2D(gl.TEXTURE_2D, 0, format, width, height, 0, format, type, texelSource.data);
-
-            if (this.generateMipMap)
-                gl.generateMipmap(gl.TEXTURE_2D);
-
-            gl.bindTexture(gl.TEXTURE_2D, null);
-            this.created();
-        },
-
         createTex2DFromData: function(internalFormat, width, height, sourceFormat, sourceType, opt) {
             var gl = this.gl;
 
@@ -25347,220 +24965,6 @@ XML3D.webgl.stopEvent = function(ev) {
 
 
     webgl.GLTexture = GLTexture;
-
-}(XML3D.webgl));
-(function(webgl) {
-
-    //noinspection JSValidateJSDoc
-    /**
-     * @param {WebGLRenderingContext} gl
-     * @constructor
-     */
-    var GLCubeMap = function(gl) {
-        Xflow.SamplerConfig.call(this);
-        this.setDefaults();
-        this.width = 0;
-        this.height = 0;
-        this.gl = gl;
-        this.handle = null;
-        this.glSides = [gl.TEXTURE_CUBE_MAP_POSITIVE_X, gl.TEXTURE_CUBE_MAP_NEGATIVE_X,
-                        gl.TEXTURE_CUBE_MAP_POSITIVE_Y, gl.TEXTURE_CUBE_MAP_NEGATIVE_Y,
-                        gl.TEXTURE_CUBE_MAP_POSITIVE_Z, gl.TEXTURE_CUBE_MAP_NEGATIVE_Z];
-    };
-    XML3D.createClass(GLCubeMap, Xflow.SamplerConfig);
-
-    GLCubeMap.State = {
-        NONE :    "none",
-        LOADING : "loading",
-        READY :   "ready",
-        ERROR :   "error"
-    };
-
-
-    var getOrCreateFallbackTexture = (function () {
-
-        var c_fallbackTexture = null;
-
-        return function (gl) {
-            if (!c_fallbackTexture) {
-                c_fallbackTexture = new GLCubeMap(gl);
-                var size = 16;
-                var texels = new Uint8Array(size * size * 3);
-                for (var i = 0; i < texels.length; i++) {
-                    texels[i] = 128;
-                }
-                c_fallbackTexture.createTex2DFromData(gl.RGB, size, size, gl.RGB, gl.UNSIGNED_BYTE, {
-                    texels: texels,
-                    wrapS: gl.CLAMP_TO_EDGE,
-                    wrapT: gl.CLAMP_TO_EDGE,
-                    minFilter: gl.LINEAR,
-                    magFilter: gl.LINEAR
-                });
-            }
-            return c_fallbackTexture;
-        }
-    }());
-
-    var isPowerOfTwo = function(dimension) {
-        return (dimension & (dimension - 1)) == 0;
-    };
-    var nextHighestPowerOfTwo = function(x) {
-        --x;
-        for ( var i = 1; i < 32; i <<= 1) {
-            x = x | x >> i;
-        }
-        return x + 1;
-    };
-
-    /**
-     * Scale up the texture to the next highest power of two dimensions.
-     * @returns {HTMLCanvasElement}
-     */
-    var scaleImage = function (image, width, height) {
-        var canvas = document.createElement("canvas");
-        canvas.width = nextHighestPowerOfTwo(width);
-        canvas.height = nextHighestPowerOfTwo(height);
-
-        var context = canvas.getContext("2d");
-        context.drawImage(image, 0, 0, canvas.width, canvas.height);
-        return canvas;
-    };
-
-
-    XML3D.extend(GLCubeMap.prototype, {
-        /**
-         * @param {Xflow.TextureEntry} textureEntry
-         */
-        updateFromTextureEntry : function(textureEntry) {
-            var img = textureEntry.getImage();
-            if(img) {
-                if(!this.handle) {
-                    this.handle = this.gl.createTexture();
-                }
-                this.set(textureEntry.getSamplerConfig());
-                if(!textureEntry.isLoading()) {
-                    this.updateTex2DFromImage(img);
-                } else {
-                    this.loads();
-                }
-            } else {
-                this.failed();
-            }
-        },
-        /**
-         * We need to scale texture when one of the wrap modes is not CLAMP_TO_EDGE and
-         * one of the texture dimensions is not power of two.
-         * Otherwise rendered texture will be just black.
-         * @param {number} width
-         * @param {number} height
-         * @returns {boolean}
-         */
-        needsScale: function(width, height) {
-            return (this.generateMipMap || this.wrapS != this.gl.CLAMP_TO_EDGE || this.wrapT != this.gl.CLAMP_TO_EDGE) &&
-            (!isPowerOfTwo(width) || !isPowerOfTwo(height))
-        },
-
-        /**
-         * @param {Image|HTMLVideoElement} image
-         */
-        updateTex2DFromImage : function(image, side) {
-            var gl = this.gl,
-            width = this.width = image.videoWidth || image.width,
-            height = this.height = image.videoHeight || image.height;
-            
-            gl.bindTexture(gl.TEXTURE_CUBE_MAP, this.handle);
-
-            if(this.needsScale(width, height)) {
-                image = scaleImage(image, width, height);
-            }
-            if(side === "undefined" || side == null )
-                for(var sideIndex = 0; sideIndex < this.glSides.length; ++sideIndex)
-                    gl.texImage2D(this.glSides[sideIndex], 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-            else
-                gl.texImage2D(this.glSides[side], 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-
-            gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, this.wrapS);
-            gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, this.wrapT);
-            gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, this.minFilter);
-            gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, this.magFilter);
-
-            if (this.generateMipMap) {
-                gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
-            }
-            gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
-
-            this.created();
-        },
-        bind : function(unit) {
-            if (this.canBind()) {
-                this.gl.activeTexture(this.gl.TEXTURE0 + unit);
-                this.gl.bindTexture(this.textureType, this.handle);
-            } else {
-                getOrCreateFallbackTexture(this.gl).bind(unit);
-            }
-        },
-        unbind : function(unit) {
-            this.gl.activeTexture(this.gl.TEXTURE0 + unit);
-            this.gl.bindTexture(this.textureType, null);
-        },
-        destroy : function() {
-            this.gl.deleteTexture(this.handle);
-        },
-        canBind : function() {
-            return this.current == GLCubeMap.State.READY;
-        },
-        createTex2DFromData: function(internalFormat, width, height, sourceFormat, sourceType, opt) {
-            var gl = this.gl;
-
-            var opt = opt || {};
-            var texels = opt.texels;
-
-            if (!texels) {
-                if (sourceType == gl.FLOAT) {
-                    texels = new Float32Array(width * height * 4);
-                } else {
-                    texels = new Uint8Array(width * height * 4);
-                }
-            }
-            this.width = width;
-            this.height = height;
-            this.handle = gl.createTexture();
-            this.textureType = gl.TEXTURE_CUBE_MAP;
-            gl.bindTexture(gl.TEXTURE_CUBE_MAP, this.handle);
-
-            // gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-            gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, opt.wrapS);
-            gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, opt.wrapT);
-            gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, opt.minFilter);
-            gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, opt.magFilter);
-
-            if (opt.isDepth)
-                texels = null;
-            for(var i = 0; i < this.glSides.length; i++)
-                gl.texImage2D(this.glSides[i], 0, internalFormat, width, height, 0, sourceFormat, sourceType, texels);
-
-            if (opt.generateMipmap) {
-                gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
-            }
-
-            gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
-            this.created();
-        }
-
-    });
-
-    window.StateMachine.create({
-        target: GLCubeMap.prototype,
-        initial: GLCubeMap.State.NONE,
-        events: [
-            { name:'created', from: '*',    to: GLCubeMap.State.READY   },
-            { name:'failed',  from: '*',    to: GLCubeMap.State.ERROR   },
-            { name:'loads',   from: '*',    to: GLCubeMap.State.LOADING }
-        ]
-    });
-
-
-    webgl.GLCubeMap = GLCubeMap;
 
 }(XML3D.webgl));
 (function (webgl) {
@@ -26074,223 +25478,6 @@ XML3D.webgl.stopEvent = function(ev) {
 
 
 }(XML3D.webgl));
-(function (webgl) {
-
-    /**
-     * @param context
-     * @param opt
-     * @constructor
-     * @implements IRenderTarget
-     */
-    var GLCubeMapRenderTarget = function (context, opt) {
-        var gl = context.gl;
-        this.context = context;
-        this.width = opt.width || 800;
-        this.height = this.width;
-        this.scale = opt.scale || 1;
-        this.opt = this.fillOptions(opt);
-        this.handle = null;
-        this.ctex = null;
-        this.dtex = null;
-        this.stex = null;
-        this.colorTarget = null;
-        this.depthTarget =  null;
-        this.stencilTarget = null;
-        this.valid = false;
-        this.glSides = [gl.TEXTURE_CUBE_MAP_POSITIVE_X, gl.TEXTURE_CUBE_MAP_NEGATIVE_X,
-                        gl.TEXTURE_CUBE_MAP_POSITIVE_Y, gl.TEXTURE_CUBE_MAP_NEGATIVE_Y,
-                        gl.TEXTURE_CUBE_MAP_POSITIVE_Z, gl.TEXTURE_CUBE_MAP_NEGATIVE_Z];
-        this.framebuffers = [];
-    };
-
-    XML3D.extend(GLCubeMapRenderTarget.prototype, {
-        getWidth: function() {
-            return this.width;
-        },
-        getHeight: function() {
-            return this.height;
-        },
-        getScale: function() {
-            return this.scale;
-        },
-        bind: function (side) {
-            var created = false;
-            if (this.framebuffers.length <= 0) {
-                this.createFrameBuffers(this.opt.colorFormat, this.opt.depthFormat, this.opt.stencilFormat);
-                created = true;
-            }
-            if (this.valid) {
-                var gl = this.context.gl;
-                gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffers[side]);
-                // Set default viewport
-                created && gl.viewport(0, 0, this.width, this.height);
-            }
-        },
-        unbind: function () {
-            var gl = this.context.gl;
-            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-        },
-        resize: function(width, height) {
-            this.dispose();
-            this.width = width;
-            this.height = height;
-            this.bind();
-        },
-        createFrameBuffers: function (colorFormat, depthFormat, stencilFormat) {
-            var gl = this.context.gl;
-
-            if(colorFormat) {
-                this.ctex = new XML3D.webgl.GLCubeMap(gl);
-                this.ctex.createTex2DFromData(colorFormat, this.width, this.height, gl.RGBA, this.opt.colorType || gl.UNSIGNED_BYTE, this.opt);
-                this.colorTarget = {
-                    handle: this.ctex,
-                    isTexture: true
-                };
-            }
-            if(depthFormat) {
-                this.opt.isDepth = true;
-
-
-                if (this.opt.depthAsRenderbuffer) {
-
-                } else {
-
-                    this.dtex = new XML3D.webgl.GLCubeMap(gl);
-                    this.dtex.createTex2DFromData(depthFormat, this.width, this.height, gl.DEPTH_COMPONENT, gl.FLOAT, this.opt);
-                    this.depthTarget = {
-                        handle: this.dtex,
-                        isTexture: true
-                    }
-                }
-            }
-            if(stencilFormat) {
-                this.stex = new XML3D.webgl.GLCubeMap(gl);
-                this.stex.createTex2DFromData(stencilFormat, this.width, this.height, gl.STENCIL_COMPONENT, gl.UNSIGNED_BYTE, this.opt);
-                this.stencilTarget = {
-                    handle: this.stex,
-                    isTexture: true
-                }
-            }
-
-
-            for(var i = 0; i < this.glSides.length; ++i) {
-                this.framebuffers[i] = gl.createFramebuffer();
-                gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffers[i]);
-                colorFormat && this.createColorTarget(colorFormat, i);
-                depthFormat && this.createDepthTarget(depthFormat, i);
-                stencilFormat && this.createStencilTarget(stencilFormat, i);
-                this.checkStatus();
-            }
-        },
-        createColorTarget: function (colorFormat, side) {
-            var gl = this.context.gl;
-
-            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, this.glSides[side], this.ctex.handle, 0);
-        },
-        createDepthTarget: function (depthFormat, side) {
-            var gl = this.context.gl;
-            
-            if (this.opt.depthAsRenderbuffer) {
-                if (!this.dtex) this.dtex = [];
-                this.dtex[side] = gl.createRenderbuffer();
-                gl.bindRenderbuffer(gl.RENDERBUFFER, this.dtex[side]);
-                gl.renderbufferStorage(gl.RENDERBUFFER, depthFormat, this.width, this.height);
-                gl.bindRenderbuffer(gl.RENDERBUFFER, null);
-
-                gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, this.dtex[side]);
-                if (!this.depthTarget) this.depthTarget = [];
-                this.depthTarget[side] = {
-                    handle: this.dtex[side],
-                    isTexture: false
-                }
-            }
-
-        },
-        createStencilTarget: function (stencilFormat, side) {
-            var gl = this.context.gl;
-
-            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.STENCIL_ATTACHMENT, this.glSides[side], this.stex.handle, 0);
-
-        },
-        checkStatus: function (side) {
-            var gl = this.context.gl;
-
-            gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffers[side]);
-            //Finalize framebuffer creation
-            var fbStatus = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
-
-            switch (fbStatus) {
-                case gl.FRAMEBUFFER_COMPLETE:
-                    break;
-                case gl.FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-                    XML3D.debug.logError("Incomplete framebuffer: FRAMEBUFFER_INCOMPLETE_ATTACHMENT");
-                    break;
-                case gl.FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
-                    XML3D.debug.logError("Incomplete framebuffer: FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT");
-                    break;
-                case gl.FRAMEBUFFER_INCOMPLETE_DIMENSIONS:
-                    XML3D.debug.logError("Incomplete framebuffer: FRAMEBUFFER_INCOMPLETE_DIMENSIONS");
-                    break;
-                case gl.FRAMEBUFFER_UNSUPPORTED:
-                    XML3D.debug.logError("Incomplete framebuffer: FRAMEBUFFER_UNSUPPORTED");
-                    break;
-                default:
-                    XML3D.debug.logError("Incomplete framebuffer: " + fbStatus);
-            }
-
-            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-
-            this.valid = (fbStatus == gl.FRAMEBUFFER_COMPLETE);
-            return this.valid;
-        },
-        fillOptions: function (options) {
-            var gl = this.context.gl;
-            var opt = {
-                wrapS: gl.CLAMP_TO_EDGE,
-                wrapT: gl.CLAMP_TO_EDGE,
-                minFilter: gl.NEAREST,
-                magFilter: gl.NEAREST,
-                depthMode: gl.LUMINANCE,
-                depthCompareMode: gl.COMPARE_R_TO_TEXTURE,
-                depthCompareFunc: gl.LEQUAL,
-                colorsAsRenderbuffer: false,
-                depthAsRenderbuffer: false,
-                stencilAsRenderbuffer: false,
-                isDepth: false
-            };
-
-            for (var item in options) {
-                opt[item] = options[item];
-            }
-
-            return opt;
-        },
-        dispose: function () {
-            if (this.framebuffers.length <= 0)
-                return;
-
-            var gl = this.context.gl;
-            for(var side in this.framebuffers)
-                gl.deleteFramebuffer(this.framebuffers[side]);
-
-            if (this.colorTarget.handle !== null) {
-                    this.colorTarget.handle.dispose();
-            }
-            if (this.depthTarget !== null) {
-                this.depthTarget.handle.dispose();
-            }
-            if (this.stencilTarget !== null) {
-                    this.stencilTarget.handle.dispose();
-            }
-
-            this.framebuffers = [];
-        }
-    });
-
-    webgl.GLCubeMapRenderTarget = GLCubeMapRenderTarget;
-
-
-}(XML3D.webgl));
 (function (ns) {
 
     var vec3 = XML3D.math.vec3;
@@ -26307,20 +25494,17 @@ XML3D.webgl.stopEvent = function(ev) {
      * @param {number} aspect
      * @constructor
      */
-    var Frustum = function (nearPlane, farPlane, fovx, fovy, aspect, orthographic) {
+    var Frustum = function (nearPlane, farPlane, fovx, fovy, aspect) {
         /**
          *
          * @type {boolean}
          */
-        if(typeof(orthographic) === "undefined")
-            this.orthographic = false;
-        else
-            this.orthographic = orthographic;
-        this.setFrustum(nearPlane, farPlane, fovx, fovy, aspect, this.orthographic);
+        this.orthographic = false;
+        this.setFrustum(nearPlane, farPlane, fovx, fovy, aspect);
     };
 
     XML3D.extend(Frustum.prototype, {
-        setFrustum: function (nearPlane, farPlane, fovx, fovy, aspect, orthographic) {
+        setFrustum: function (nearPlane, farPlane, fovx, fovy, aspect) {
             if (fovx && fovy)
                 throw new Error("fovx and fovy cannot both be non-zero.");
 
@@ -26338,11 +25522,7 @@ XML3D.webgl.stopEvent = function(ev) {
             }
             this.nearPlane = nearPlane;
             this.farPlane = farPlane;
-
-            if(typeof(orthographic) === "undefined")
-                this.orthographic = false;
-            else
-                this.orthographic = orthographic;
+            this.orthographic = false;
 
         },
         getProjectionMatrix: function (matrix) {
@@ -26713,7 +25893,7 @@ XML3D.webgl.stopEvent = function(ev) {
                         offset += sd[j] * 2; //GL size for UNSIGNED_SHORT is 2 bytes
                     }
                 } else {
-                    gl.drawElements(this.glType, this.getElementCount(), buffers.index.glType, 0);
+                    gl.drawElements(this.glType, this.getElementCount(), gl.UNSIGNED_SHORT, 0);
                 }
                 triCount = this.getElementCount() / 3;
             } else {
@@ -26776,45 +25956,14 @@ XML3D.webgl.stopEvent = function(ev) {
     };
 
     /**
-     * @param {GLContext} context
-     * @param {Uint32Array} data
-     * @param {number} maxIndex
-     */
-    var createElementBuffer = function(context, data, maxIndex) {
-        var gl = context.gl;
-        var bufferData = data;
-        var glType = gl.UNSIGNED_INT;
-
-        if(maxIndex < (1 << 8)) {
-            glType = gl.UNSIGNED_BYTE;
-            bufferData = new Uint8Array(data);
-        } else if (maxIndex < (1 << 16)) {
-            glType = gl.UNSIGNED_SHORT;
-            bufferData = new Uint16Array(data);
-        } else if (!context.extensions[webgl.GLContext.EXTENSIONS.UINT32_INDICES]) {
-            XML3D.debug.logError("Trying to use index data with indices larger than 65535, but this is not supported on your platform. Indexing errors will occur.");
-            glType = gl.UNSIGNED_SHORT;
-            bufferData = new Uint16Array(data);
-        }
-
-        var buffer = gl.createBuffer();
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, bufferData, gl.STATIC_DRAW);
-        buffer.length = data.length;
-        buffer.glType = glType;
-        return buffer;
-    };
-
-    /**
-     * @param {GLContext} context
+     * @param {WebGLRenderingContext} gl
+     * @param {number} type
      * @param {Object} data
      */
-    var createArrayBuffer = function(context, data) {
-        var gl = context.gl;
-
+    var createBuffer = function(gl, type, data) {
         var buffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-        gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+        gl.bindBuffer(type, buffer);
+        gl.bufferData(type, data, gl.STATIC_DRAW);
         buffer.length = data.length;
         buffer.glType = getGLTypeFromArray(data);
         return buffer;
@@ -26824,13 +25973,34 @@ XML3D.webgl.stopEvent = function(ev) {
         var webglData = context.getXflowEntryWebGlData(xflowDataEntry);
         var buffer = webglData.buffer;
         var gl = context.gl;
+        switch (webglData.changed) {
+            case Xflow.DATA_ENTRY_STATE.CHANGED_VALUE:
+                var bufferType = elementBuffer ? gl.ELEMENT_ARRAY_BUFFER : gl.ARRAY_BUFFER;
 
+                gl.bindBuffer(bufferType, buffer);
+                if (elementBuffer) {
+                    gl.bufferSubData(bufferType, 0, new Uint16Array(xflowDataEntry.getValue()));
+                } else {
+                    gl.bufferSubData(bufferType, 0, xflowDataEntry.getValue());
+                }
+                break;
+            case Xflow.DATA_ENTRY_STATE.CHANGED_NEW:
+            case Xflow.DATA_ENTRY_STATE.CHANGED_SIZE:
+                if (elementBuffer) {
+                    buffer = createBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(xflowDataEntry.getValue()));
+                } else {
+                    buffer = createBuffer(gl, gl.ARRAY_BUFFER, xflowDataEntry.getValue());
+                }
+                buffer.tupleSize = xflowDataEntry.getTupleSize();
+                webglData.buffer = buffer;
+                break;
+        }
         // Also write min and max values for elementBuffers
-        if (webglData.changed && elementBuffer) {
+        if(webglData.changed && elementBuffer){
             var indexValue = xflowDataEntry.getValue();
             var minIndex = 100000000, maxIndex = 0;
             var i = indexValue.length;
-            while (i--) {
+            while(i--){
                 minIndex = Math.min(minIndex, indexValue[i]);
                 maxIndex = Math.max(maxIndex, indexValue[i]);
             }
@@ -26838,48 +26008,9 @@ XML3D.webgl.stopEvent = function(ev) {
             webglData.minIndex = minIndex;
         }
 
-        //noinspection FallthroughInSwitchStatementJS
-        switch (webglData.changed) {
-            case Xflow.DATA_ENTRY_STATE.CHANGED_VALUE:
-                if (elementBuffer) {
-                    var bufferData = xflowDataEntry.getValue();
-                    switch (buffer.glType) {
-                        case gl.UNSIGNED_BYTE:
-                            bufferData = new Uint8Array(bufferData);
-                            break;
-                        case gl.UNSIGNED_SHORT:
-                            bufferData = new Uint16Array(bufferData);
-                            break;
-                        case gl.UNSIGNED_INT:
-                            // This is what we expect anyway
-                            break;
-                        default:
-                            XML3D.debug.logError("Uknown GL type for element buffer: ", buffer.glType);
-                            return null;
-                    }
-                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer);
-                    gl.bufferSubData(gl.ELEMENT_ARRAY_BUFFER, 0, bufferData);
-                } else {
-                    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-                    gl.bufferSubData(gl.ARRAY_BUFFER, 0, xflowDataEntry.getValue());
-                }
-                break;
-            case Xflow.DATA_ENTRY_STATE.CHANGED_NEW:
-            case Xflow.DATA_ENTRY_STATE.CHANGED_SIZE:
-            case Xflow.DATA_ENTRY_STATE.CHANGED_SIZE_TYPE:
-                if (elementBuffer) {
-                    buffer = createElementBuffer(context, xflowDataEntry.getValue(), webglData.maxIndex);
-                } else {
-                    buffer = createArrayBuffer(context, xflowDataEntry.getValue());
-                }
-                buffer.tupleSize = xflowDataEntry.getTupleSize();
-                webglData.buffer = buffer;
-                break;
-        }
-
         webglData.changed = 0;
         return buffer;
-    };
+    }
 
     var getGLTypeFromArray = function(array) {
         var GL = window.WebGLRenderingContext;
@@ -26945,7 +26076,7 @@ XML3D.webgl.stopEvent = function(ev) {
      */
     webgl.canvasToGlY = function(canvas, y) {
         return canvas.height - y - 1;
-    };
+    }
 
     webgl.FRAGMENT_HEADER = [
         "#ifdef GL_FRAGMENT_PRECISION_HIGH",
@@ -26969,12 +26100,10 @@ XML3D.webgl.stopEvent = function(ev) {
      */
     webgl.setUniform = function(gl, u, value, transposed) {
 
-        //noinspection FallthroughInSwitchStatementJS
         switch (u.glType) {
             case 35670: //gl.BOOL
             case 5124:  //gl.INT
             case 35678: //gl.SAMPLER_2D
-            case 35680: //gl.SAMPLER_CUBE
                 if (value && value.length !== undefined) {
                     gl.uniform1iv(u.location, value);
                 } else {
@@ -27039,23 +26168,23 @@ XML3D.webgl.stopEvent = function(ev) {
 
     XML3D.extend(FullscreenQuad.prototype, {
 
-        createGLAssets: function(gl) {
-            this.posBuffer = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, this.posBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([ 1,1,0, -1,1,0, 1,-1,0, -1,-1,0 ]), gl.STATIC_DRAW);
-        },
+		createGLAssets: function(gl) {
+			this.posBuffer = gl.createBuffer();
+			gl.bindBuffer(gl.ARRAY_BUFFER, this.posBuffer);
+			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([ 1,1,0, -1,1,0, 1,-1,0, -1,-1,0 ]), gl.STATIC_DRAW);
+		},
 
-        draw: function(program) {
-            var gl = this.gl;
-            var posAttr = program.attributes["position"];
-            gl.enableVertexAttribArray(posAttr.location);
-            gl.bindBuffer(gl.ARRAY_BUFFER, this.posBuffer);
-            gl.vertexAttribPointer(posAttr.location, 3, gl.FLOAT, false, 0, 0);
+		draw: function(program) {
+			var gl = this.gl;
+			var posAttr = program.attributes["position"];
+			gl.enableVertexAttribArray(posAttr.location);
+			gl.bindBuffer(gl.ARRAY_BUFFER, this.posBuffer);
+			gl.vertexAttribPointer(posAttr.location, 3, gl.FLOAT, false, 0, 0);
 
-            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+			gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
-            gl.disableVertexAttribArray(posAttr.location);
-        }
+			gl.disableVertexAttribArray(posAttr.location);
+		}
 
     });
 
@@ -27094,9 +26223,9 @@ XML3D.webgl.stopEvent = function(ev) {
         scene.addEventListener(webgl.Scene.EVENT_TYPE.LIGHT_VALUE_CHANGED, this.onLightValueChange.bind(this));
         scene.addEventListener(webgl.Scene.EVENT_TYPE.SCENE_SHAPE_CHANGED, this.onSceneShapeChange.bind(this));
         scene.addEventListener(webgl.ShaderComposerFactory.EVENT_TYPE.MATERIAL_INITIALIZED, this.onShaderChange.bind(this));
-        this._enableSSAO = enableSSAO;
+		this._enableSSAO = enableSSAO;
         this.mainPass = null;
-        this.createMainPass();
+		this.createMainPass();
     };
 
     XML3D.createClass(ForwardRenderTree, webgl.BaseRenderTree);
@@ -27110,19 +26239,14 @@ XML3D.webgl.stopEvent = function(ev) {
             }
             else{
                 if(light.light.type == "spot")
-                    light.userData = this.createLightPass(light);
-                else if(light.light.type == "directional")
-                    light.userData = this.createLightPass(light);
-                else if(light.light.type == "point") {
-                    light.userData = this.createPointLightPass(light);
-                }
+                    light.userData = this.createLightPass(light)
             }
             this.reassignLightPasses(evt.target);
         },
         onLightValueChange: function(evt){
             // TODO: Would be great to check of the light position or orientation specifically changed
             // We don't need to invalidate the lightPass otherwise
-            if(evt.light.castShadow && evt.light.visible){
+            if(evt.light.castShadow){
                 evt.light.userData && evt.light.userData.setProcessed(false);
             }
         },
@@ -27130,18 +26254,8 @@ XML3D.webgl.stopEvent = function(ev) {
             var scene = evt.target;
             for (var i = 0; i < scene.lights.spot.length; i++) {
                 var spotLight = scene.lights.spot[i];
-                if(spotLight.castShadow && spotLight.visible)
+                if(spotLight.castShadow)
                     spotLight.userData && spotLight.userData.setProcessed(false);
-            }
-            for (var i = 0; i < scene.lights.directional.length; i++) {
-                var directionalLight = scene.lights.directional[i];
-                if(directionalLight.castShadow && directionalLight.visible)
-                    directionalLight.userData && directionalLight.userData.setProcessed(false);
-            }
-            for (var i = 0; i < scene.lights.point.length; i++) {
-                var pointLight = scene.lights.point[i];
-                if(pointLight.castShadow && pointLight.visible)
-                    pointLight.userData && pointLight.userData.setProcessed(false);
             }
         },
         onShaderChange: function(evt) {
@@ -27149,33 +26263,17 @@ XML3D.webgl.stopEvent = function(ev) {
         },
 
         createLightPass: function(light){
-            var context = this.renderInterface.context;
-            var dimension = Math.max(context.canvasTarget.width, context.canvasTarget.height) * 2;
-            var lightFramebuffer  = new webgl.GLRenderTarget(context, {
-                width: dimension,
-                height: dimension,
-                colorFormat: context.gl.RGBA,
-                depthFormat: context.gl.DEPTH_COMPONENT16,
-                stencilFormat: null,
-                depthAsRenderbuffer: true
-            });
+            var context = this.renderInterface.context
+			var dimension = Math.max(context.canvasTarget.width, context.canvasTarget.height) * 2;
+			var lightFramebuffer  = new webgl.GLRenderTarget(context, {
+				width: dimension,
+				height: dimension,
+				colorFormat: context.gl.RGBA,
+				depthFormat: context.gl.DEPTH_COMPONENT16,
+				stencilFormat: null,
+				depthAsRenderbuffer: true
+			});
             var lightPass = new webgl.LightPass(this.renderInterface, lightFramebuffer, light);
-            lightPass.init(context);
-            return lightPass;
-        },
-
-        createPointLightPass: function(light){
-            var context = this.renderInterface.context;
-            var dimension = Math.max(context.canvasTarget.width, context.canvasTarget.height) * 2;
-            var lightFramebuffer  = new webgl.GLCubeMapRenderTarget(context, {
-                width: dimension,
-                height: dimension,
-                colorFormat: context.gl.RGBA,
-                depthFormat: context.gl.DEPTH_COMPONENT16,
-                stencilFormat: null,
-                depthAsRenderbuffer: true
-            });
-            var lightPass = new webgl.PointLightPass(this.renderInterface, lightFramebuffer, light);
             lightPass.init(context);
             return lightPass;
         },
@@ -27187,111 +26285,97 @@ XML3D.webgl.stopEvent = function(ev) {
             for (var i = 0; i < scene.lights.spot.length; i++) {
                 var spotLight = scene.lights.spot[i];
                 this.mainPass.addLightPass("spotLightShadowMap", spotLight.userData);
-                if(!spotLight.castShadow || !spotLight.visible)
-                    spotLight.userData.setProcessed(true);
-            }
-            for (var i = 0; i < scene.lights.directional.length; i++) {
-                var directionalLight = scene.lights.directional[i];
-                this.mainPass.addLightPass("directionalLightShadowMap", directionalLight.userData);
-                if(!directionalLight.castShadow || !directionalLight.visible)
-                    directionalLight.userData.setProcessed(true);
-            }
-            for (var i = 0; i < scene.lights.point.length; i++) {
-                var pointLight = scene.lights.point[i];
-                this.mainPass.addLightPass("pointLightShadowMap", pointLight.userData);
-                if(!pointLight.castShadow || !pointLight.visible)
-                    pointLight.userData.setProcessed(true);
             }
         },
 
         createMainPass: function() {
             var outputTarget = this.renderInterface.context.canvasTarget;
-            if (this._enableSSAO) {
-                var positionPass = this.createVertexAttributePass("render-position");
-                var normalPass = this.createVertexAttributePass("render-normal");
-                var ssaoPass = this.createSSAOPass(positionPass.output, normalPass.output);
-                ssaoPass.addPrePass(positionPass);
-                ssaoPass.addPrePass(normalPass);
-                var blurPass = this.createBlurPass(ssaoPass.output);
-                blurPass.addPrePass(ssaoPass);
-                this._blurPass = blurPass;
-                this._ssaoPass = ssaoPass;
-                this._positionPass = positionPass;
-                this._normalPass = normalPass;
-                this.mainPass = new webgl.ForwardRenderPass(this.renderInterface, outputTarget, {
-                    inputs: {
-                        ssaoMap: blurPass.output
-                    }
-                });
-                this.mainPass.addPrePass(blurPass);
-            } else {
-                this.mainPass = new webgl.ForwardRenderPass(this.renderInterface, outputTarget);
-            }
+			if (this._enableSSAO) {
+				var positionPass = this.createVertexAttributePass("render-position");
+				var normalPass = this.createVertexAttributePass("render-normal");
+				var ssaoPass = this.createSSAOPass(positionPass.output, normalPass.output);
+				ssaoPass.addPrePass(positionPass);
+				ssaoPass.addPrePass(normalPass);
+				var blurPass = this.createBlurPass(ssaoPass.output);
+				blurPass.addPrePass(ssaoPass);
+				this._blurPass = blurPass;
+				this._ssaoPass = ssaoPass;
+				this._positionPass = positionPass;
+				this._normalPass = normalPass;
+				this.mainPass = new webgl.ForwardRenderPass(this.renderInterface, outputTarget, {
+					inputs: {
+						ssaoMap: blurPass.output
+					}
+				});
+				this.mainPass.addPrePass(blurPass);
+			} else {
+				this.mainPass = new webgl.ForwardRenderPass(this.renderInterface, outputTarget);
+			}
             this.mainRenderPass = this.mainPass;
         },
 
-        createVertexAttributePass: function (programName) {
-            var context = this.renderInterface.context;
-            var buffer= new webgl.GLRenderTarget(context, {
-                width: context.canvasTarget.width,
-                height: context.canvasTarget.height,
-                colorFormat: context.gl.RGBA,
-                colorType: context.gl.FLOAT,
-                depthFormat: context.gl.DEPTH_COMPONENT16,
-                stencilFormat: null,
-                depthAsRenderbuffer: true
-            });
-            return new webgl.VertexAttributePass(this.renderInterface, buffer, {
-                programName: programName
-            });
-        },
+		createVertexAttributePass: function (programName) {
+			var context = this.renderInterface.context;
+			var buffer= new webgl.GLRenderTarget(context, {
+				width: context.canvasTarget.width,
+				height: context.canvasTarget.height,
+				colorFormat: context.gl.RGBA,
+				colorType: context.gl.FLOAT,
+				depthFormat: context.gl.DEPTH_COMPONENT16,
+				stencilFormat: null,
+				depthAsRenderbuffer: true
+			});
+			return new webgl.VertexAttributePass(this.renderInterface, buffer, {
+				programName: programName
+			});
+		},
 
-        createSSAOPass: function (positionBuffer, normalBuffer) {
-            var context = this.renderInterface.context;
-            var ssaoBuffer = new webgl.GLRenderTarget(context, {
-                width: context.canvasTarget.width,
-                height: context.canvasTarget.height,
-                colorFormat: context.gl.RGBA,
-                depthFormat: context.gl.DEPTH_COMPONENT16,
-                stencilFormat: null,
-                depthAsRenderbuffer: true
-            });
+		createSSAOPass: function (positionBuffer, normalBuffer) {
+			var context = this.renderInterface.context;
+			var ssaoBuffer = new webgl.GLRenderTarget(context, {
+				width: context.canvasTarget.width,
+				height: context.canvasTarget.height,
+				colorFormat: context.gl.RGBA,
+				depthFormat: context.gl.DEPTH_COMPONENT16,
+				stencilFormat: null,
+				depthAsRenderbuffer: true
+			});
 
-            return new webgl.SSAOPass(this.renderInterface, ssaoBuffer, {
-                inputs: {
-                    positionBuffer: positionBuffer,
-                    normalBuffer: normalBuffer
-                }
-            });
-        },
+			return new webgl.SSAOPass(this.renderInterface, ssaoBuffer, {
+				inputs: {
+					positionBuffer: positionBuffer,
+					normalBuffer: normalBuffer
+				}
+			});
+		},
 
-        createBlurPass: function (inputBuffer) {
-            var context = this.renderInterface.context;
-            var blurBuffer = new webgl.GLRenderTarget(context, {
-                width: inputBuffer.width,
-                height: inputBuffer.height,
-                colorFormat: context.gl.RGBA,
-                depthFormat: context.gl.DEPTH_COMPONENT16,
-                stencilFormat: null,
-                depthAsRenderbuffer: true
-            });
+		createBlurPass: function (inputBuffer) {
+			var context = this.renderInterface.context;
+			var blurBuffer = new webgl.GLRenderTarget(context, {
+				width: inputBuffer.width,
+				height: inputBuffer.height,
+				colorFormat: context.gl.RGBA,
+				depthFormat: context.gl.DEPTH_COMPONENT16,
+				stencilFormat: null,
+				depthAsRenderbuffer: true
+			});
 
-            return new webgl.BoxBlurPass(this.renderInterface, blurBuffer, {
-                inputs: {
-                    buffer: inputBuffer
-                }
-            });
-        },
+			return new webgl.BoxBlurPass(this.renderInterface, blurBuffer, {
+				inputs: {
+					buffer: inputBuffer
+				}
+			});
+		},
 
         render: function(scene){
-            if (this._enableSSAO) {
-                this._positionPass.setProcessed(false);
-                this._normalPass.setProcessed(false);
-                this._ssaoPass.setProcessed(false);
-                this._blurPass.setProcessed(false);
-            }
-            this.mainRenderPass.setProcessed(false);
-            webgl.BaseRenderTree.prototype.render.call(this, scene);
+			if (this._enableSSAO) {
+				this._positionPass.setProcessed(false);
+				this._normalPass.setProcessed(false);
+				this._ssaoPass.setProcessed(false);
+				this._blurPass.setProcessed(false);
+			}
+			this.mainRenderPass.setProcessed(false);
+			webgl.BaseRenderTree.prototype.render.call(this, scene);
         },
 
         getRenderStats: function(){
@@ -27304,12 +26388,12 @@ XML3D.webgl.stopEvent = function(ev) {
 })(XML3D.webgl);
 (function (webgl) {
 
-    var OPTION_SSAO = "renderer-ssao";
-    var FLAGS = {};
-    FLAGS[OPTION_SSAO] = {defaultValue: false, recompileOnChange: true };
-    for(var flag in FLAGS){
-        XML3D.options.register(flag, FLAGS[flag].defaultValue);
-    }
+	var OPTION_SSAO = "renderer-ssao";
+	var FLAGS = {};
+	FLAGS[OPTION_SSAO] = {defaultValue: false, recompileOnChange: true };
+	for(var flag in FLAGS){
+		XML3D.options.register(flag, FLAGS[flag].defaultValue);
+	}
     /**
      * @interface
      */
@@ -27362,7 +26446,7 @@ XML3D.webgl.stopEvent = function(ev) {
 
         this.renderInterface = this.createRenderInterface();
         this.createDefaultPipelines();
-        XML3D.options.addObserver(this.onFlagsChange.bind(this));
+		XML3D.options.addObserver(this.onFlagsChange.bind(this));
     };
 
     // Just to satisfy jslint
@@ -27595,12 +26679,12 @@ XML3D.webgl.stopEvent = function(ev) {
             return this.renderInterface;
         },
 
-        onFlagsChange: function(key, value){
-            if(key == OPTION_SSAO) {
-                this.scene.shaderFactory.setShaderRecompile();
-                this.createDefaultPipelines();
-            }
-        }
+		onFlagsChange: function(key, value){
+			if(key == OPTION_SSAO) {
+				this.scene.shaderFactory.setShaderRecompile();
+				this.createDefaultPipelines();
+			}
+		}
     });
 
     webgl.GLRenderer = GLRenderer;
@@ -27655,8 +26739,8 @@ XML3D.webgl.stopEvent = function(ev) {
 
     XML3D.createClass(GLScene, webgl.Scene);
 
-    GLScene.LIGHT_PARAMETERS = ["pointLightPosition", "pointLightAttenuation", "pointLightIntensity", "pointLightOn", "pointLightCastShadow", "pointLightMatrix", "pointLightShadowBias", "pointLightNearFar",
-         "directionalLightDirection", "directionalLightIntensity", "directionalLightOn", "directionalLightCastShadow", "directionalLightMatrix", "directionalLightShadowBias",
+    GLScene.LIGHT_PARAMETERS = ["pointLightPosition", "pointLightAttenuation", "pointLightIntensity", "pointLightOn",
+         "directionalLightDirection", "directionalLightIntensity", "directionalLightOn",
          "spotLightAttenuation", "spotLightPosition", "spotLightIntensity", "spotLightDirection",
          "spotLightOn", "spotLightSoftness", "spotLightCosFalloffAngle", "spotLightCosSoftFalloffAngle", "spotLightCastShadow", "spotLightMatrix", "spotLightShadowBias"];
 
@@ -27715,7 +26799,7 @@ XML3D.webgl.stopEvent = function(ev) {
         updateLightParameters: function(){
             var parameters = this.systemUniforms, lights = this.lights;
 
-            var pointLightData = { position: [], attenuation: [], intensity: [], on: [], castShadow: [], lightMatrix: [], shadowBias: [], lightNearFar: [] };
+            var pointLightData = { position: [], attenuation: [], intensity: [], on: [] };
             lights.point.forEach(function (light, index) {
                 light.getLightData(pointLightData, index);
             });
@@ -27723,21 +26807,14 @@ XML3D.webgl.stopEvent = function(ev) {
             parameters["pointLightAttenuation"] = pointLightData.attenuation;
             parameters["pointLightIntensity"] = pointLightData.intensity;
             parameters["pointLightOn"] = pointLightData.on;
-            parameters["pointLightCastShadow"] = pointLightData.castShadow;
-            parameters["pointLightMatrix"] = pointLightData.lightMatrix;
-            parameters["pointLightShadowBias"] = pointLightData.shadowBias;
-            parameters["pointLightNearFar"] = pointLightData.lightNearFar;
 
-            var directionalLightData = { direction: [], intensity: [], on: [], castShadow: [], lightMatrix: [], shadowBias: []  };
+            var directionalLightData = { direction: [], intensity: [], on: [] };
             lights.directional.forEach(function (light, index) {
                 light.getLightData(directionalLightData, index);
             });
             parameters["directionalLightDirection"] = directionalLightData.direction;
             parameters["directionalLightIntensity"] = directionalLightData.intensity;
             parameters["directionalLightOn"] = directionalLightData.on;
-            parameters["directionalLightCastShadow"] = directionalLightData.castShadow;
-            parameters["directionalLightMatrix"] = directionalLightData.lightMatrix;
-            parameters["directionalLightShadowBias"] = directionalLightData.shadowBias;
 
             var spotLightData = { position: [], attenuation: [], direction: [], intensity: [], on: [], softness: [], falloffAngle: [], castShadow: [], lightMatrix: [], shadowBias: [] };
             lights.spot.forEach(function (light, index) {
@@ -27749,16 +26826,14 @@ XML3D.webgl.stopEvent = function(ev) {
             parameters["spotLightDirection"] = spotLightData.direction;
             parameters["spotLightOn"] = spotLightData.on;
             parameters["spotLightSoftness"] = spotLightData.softness;
+            parameters["spotLightCosFalloffAngle"] = spotLightData.falloffAngle.map(Math.cos);
             parameters["spotLightCastShadow"] = spotLightData.castShadow;
             parameters["spotLightMatrix"] = spotLightData.lightMatrix;
             parameters["spotLightShadowBias"] = spotLightData.shadowBias;
 
-            var softFalloffAngle = [];
-            for (var i = 0; i < lights.spot.length; i++) {
-                softFalloffAngle[i] = spotLightData.falloffAngle[i] * (1.0 - spotLightData.softness[i]);
-            }
-            // Map both parameters into cosinus space
-            parameters["spotLightCosFalloffAngle"] = spotLightData.falloffAngle.map(Math.cos);
+            var softFalloffAngle = spotLightData.softness.slice();
+            for (var i = 0; i < softFalloffAngle.length; i++)
+                softFalloffAngle[i] = softFalloffAngle[i] * (1.0 - spotLightData.softness[i]);
             parameters["spotLightCosSoftFalloffAngle"] = softFalloffAngle.map(Math.cos);
         },
 
@@ -27838,7 +26913,6 @@ XML3D.webgl.stopEvent = function(ev) {
             this.addEventListener( EVENT_TYPE.LIGHT_STRUCTURE_CHANGED, function(event){
                 this.lightsNeedUpdate = true;
                 this.shaderFactory.setLightStructureDirty();
-                this.context.requestRedraw("Light structure changed.");
             });
             this.addEventListener( EVENT_TYPE.LIGHT_VALUE_CHANGED, function(event){
                 this.lightsNeedUpdate = true;
@@ -27987,14 +27061,14 @@ XML3D.webgl.stopEvent = function(ev) {
                 this.removePrePass(this.prePasses[i]);
         },
 
-        setProcessed: function(processed){
-            if(this.processed && !processed){
-                var i = this.postPasses.length;
-                while (i--)
-                    this.postPasses[i].setProcessed(false);
-            }
-            this.processed = processed;
-        },
+		setProcessed: function(processed){
+			if(this.processed && !processed){
+				var i = this.postPasses.length;
+				while (i--)
+					this.postPasses[i].setProcessed(false);
+			}
+			this.processed = processed;
+		},
 
         renderTree: function(scene){
             if(this.processed)
@@ -28244,7 +27318,7 @@ XML3D.webgl.stopEvent = function(ev) {
                     program = this.program;
 
                 target.bind();
-                gl.clear(gl.DEPTH_BUFFER_BIT|gl.COLOR_BUFFER_BIT);
+                gl.clear(this.clearBits);
                 gl.viewport(0, 0, width, height);
                 gl.enable(gl.DEPTH_TEST);
 
@@ -28280,119 +27354,6 @@ XML3D.webgl.stopEvent = function(ev) {
 }(XML3D.webgl));
 (function (webgl) {
 
-    /**
-     * @param {RenderPipeline} pipeline
-     * @param {string} output
-     * @param {RenderLight} light
-     * @param {*} opt
-     * @extends {SceneRenderPass}
-     * @constructor
-     */
-    var PointLightPass = function (renderInterface, output, light, opt) {
-        webgl.SceneRenderPass.call(this, renderInterface, output, opt);
-        this.light = light;
-        this.program = null;
-    };
-
-    XML3D.createClass(PointLightPass, webgl.SceneRenderPass, {
-
-        init: function (context) {
-            this.sorter = new webgl.ObjectSorter();
-            this.program = context.programFactory.getProgramByName("light-depth");
-        },
-
-        render:  (function () {
-            var c_viewMat_tmp = XML3D.math.mat4.create();
-            var c_projMat_tmp = XML3D.math.mat4.create();
-            var c_programSystemUniforms = ["viewMatrix", "projectionMatrix"];
-
-            return function (scene) {
-
-                var gl = this.renderInterface.context.gl,
-                    target = this.output,
-                    width = target.getWidth(),
-                    height = target.getHeight(),
-                    aspect = width / height,
-                    frustum = this.light.getFrustum(aspect),
-                    program = this.program;
-                for(var side = 0; side <target.glSides.length; side++) {
-                    //calculate rotationmatrix for that face
-                    var mat_rot = XML3D.math.mat4.create();
-                    XML3D.math.mat4.identity(mat_rot);
-
-                    if(side == 0) { //look into +x o
-                        mat_rot[0] = 0;   mat_rot[1] = 0;   mat_rot[2] = -1;
-                        mat_rot[4] = 0;   mat_rot[5] = -1;   mat_rot[6] = 0;
-                        mat_rot[8] = -1;   mat_rot[9] = 0;   mat_rot[10] = 0;
-
-                    }else if(side == 1) { //look into -x
-                        mat_rot[0] = 0;   mat_rot[1] = 0;   mat_rot[2] = 1;
-                        mat_rot[4] = 0;   mat_rot[5] = -1;   mat_rot[6] = 0;
-                        mat_rot[8] = 1;   mat_rot[9] = 0;   mat_rot[10] = 0;
-
-                    }else if(side == 2){ //look into +y
-                        mat_rot[0] = 1;   mat_rot[1] = 0;   mat_rot[2] = 0;
-                        mat_rot[4] = 0;   mat_rot[5] = 0;   mat_rot[6] = -1;
-                        mat_rot[8] = 0;   mat_rot[9] = 1;   mat_rot[10] = 0;
-
-                    }else if(side == 3){ //look into -y
-                        mat_rot[0] = 1;   mat_rot[1] = 0;   mat_rot[2] = 0;
-                        mat_rot[4] = 0;   mat_rot[5] = 0;   mat_rot[6] = 1;
-                        mat_rot[8] = 0;   mat_rot[9] = -1;   mat_rot[10] = 0;
-
-                    }else if(side == 4){ //look into +z
-                        mat_rot[0] = 1;   mat_rot[1] = 0;   mat_rot[2] = 0;
-                        mat_rot[4] = 0;   mat_rot[5] = -1;   mat_rot[6] = 0;
-                        mat_rot[8] = 0;   mat_rot[9] = 0;   mat_rot[10] = -1;
-
-                    }else if(side == 5) { //look into -z
-                        mat_rot[0] = -1;   mat_rot[1] = 0;   mat_rot[2] = 0;
-                        mat_rot[4] = 0;   mat_rot[5] = -1;   mat_rot[6] = 0;
-                        mat_rot[8] = 0;   mat_rot[9] = 0;   mat_rot[10] = 1;
-                    }
-
-                    target.bind(side);
-
-                    gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
-                    gl.viewport(0, 0, width, height);
-                    gl.enable(gl.DEPTH_TEST);
-
-                    var count = { objects: 0, primitives: 0 };
-
-                    this.light.getWorldToLightMatrix(c_viewMat_tmp);
-                    //rotate for the apropriate side of the cubemap
-                    XML3D.math.mat4.mul(c_viewMat_tmp, mat_rot, c_viewMat_tmp);
-
-                    frustum.getProjectionMatrix(c_projMat_tmp, aspect);
-
-                    scene.updateReadyObjectsFromMatrices(c_viewMat_tmp, c_projMat_tmp);
-                    var objects = this.sorter.sortScene(scene);
-
-                    var parameters = {};
-                    parameters["viewMatrix"] = c_viewMat_tmp;
-                    parameters["projectionMatrix"] = c_projMat_tmp;
-
-                    //Render opaque objects
-                    for (var shader in objects.opaque) {
-                        this.renderObjectsToActiveBuffer(objects.opaque[shader], scene, target, parameters, c_programSystemUniforms, { transparent: false, stats: count, program: program });
-                    }
-
-                    // Do not render transparent objects (considered to not throw shadows
-                    target.unbind();
-                }
-                return { count: count };
-            }
-        }())
-    });
-
-
-
-
-    webgl.PointLightPass = PointLightPass;
-
-}(XML3D.webgl));
-(function (webgl) {
-
     var ForwardRenderPass = function (renderInterface, output, opt) {
         webgl.SceneRenderPass.call(this, renderInterface, output, opt);
         this.sorter = new webgl.ObjectSorter();
@@ -28405,10 +27366,10 @@ XML3D.webgl.stopEvent = function(ev) {
 
     XML3D.extend(ForwardRenderPass.prototype, {
         clearLightPasses: function() {
-            var self = this;
-            Object.keys(this.lightPasses).forEach(function (uniformName) {
-                self.removePrePass(self.lightPasses[uniformName]);
-            });
+			var self = this;
+			Object.keys(this.lightPasses).forEach(function (uniformName) {
+				self.removePrePass(self.lightPasses[uniformName]);
+			});
             this.lightPasses = {};
             for(var name in this.reassignShadowMaps)
                 this.reassignShadowMaps[name] = true;
@@ -28435,8 +27396,6 @@ XML3D.webgl.stopEvent = function(ev) {
                     reassignShadowNames.push(name);
                     var lightPasses = this.lightPasses[name];
                     scene.systemUniforms[name] = [];
-                    if(typeof lightPasses == 'undefined')
-                        continue;
                     for(var i = 0; i < lightPasses.length; ++i){
                         var output = lightPasses[i].output;
                         var handle = output && output.colorTarget && output.colorTarget.handle;
@@ -28487,8 +27446,8 @@ XML3D.webgl.stopEvent = function(ev) {
                 systemUniforms["cameraPosition"] = scene.getActiveView().getWorldSpacePosition();
                 systemUniforms["coords"] = [target.width, target.height, 1];
 
-                if (this.inputs.ssaoMap)
-                    systemUniforms["ssaoMap"] = [this.inputs.ssaoMap.colorTarget.handle];
+				if (this.inputs.ssaoMap)
+					systemUniforms["ssaoMap"] = [this.inputs.ssaoMap.colorTarget.handle];
 
                 //Render opaque objects
                 for (var program in sorted.opaque) {
@@ -28761,8 +27720,8 @@ XML3D.webgl.stopEvent = function(ev) {
 }(XML3D.webgl));(function (webgl) {
 
     var VertexAttributePass = function (renderInterface, output, opt) {
-        webgl.BaseRenderPass.call(this, renderInterface, output, opt);
-        this._program = this.renderInterface.context.programFactory.getProgramByName(opt.programName);
+		webgl.BaseRenderPass.call(this, renderInterface, output, opt);
+		this._program = this.renderInterface.context.programFactory.getProgramByName(opt.programName);
     };
 
     XML3D.createClass(VertexAttributePass, webgl.SceneRenderPass);
@@ -28792,210 +27751,210 @@ XML3D.webgl.stopEvent = function(ev) {
 
 }(XML3D.webgl));
 (function (webgl) {
-    "use strict";
+	"use strict";
 
-    var base64RandomNormals = "data:image/png;base64,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"
+	var base64RandomNormals = "data:image/png;base64,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"
 
-    var OPTION_SSAO_SCALE = "renderer-ssao-scale";
-    var OPTION_SSAO_INTENSITY = "renderer-ssao-intensity";
-    var OPTION_SSAO_BIAS = "renderer-ssao-bias";
-    var OPTION_SSAO_RADIUS = "renderer-ssao-radius";
-    var FLAGS = {};
-    FLAGS[OPTION_SSAO_SCALE] = {defaultValue: 1};
-    FLAGS[OPTION_SSAO_INTENSITY] = {defaultValue: 5};
-    FLAGS[OPTION_SSAO_BIAS] = {defaultValue: 0.2};
-    FLAGS[OPTION_SSAO_RADIUS] = {defaultValue: 1};
-    for(var flag in FLAGS){
-        XML3D.options.register(flag, FLAGS[flag].defaultValue);
-    }
+	var OPTION_SSAO_SCALE = "renderer-ssao-scale";
+	var OPTION_SSAO_INTENSITY = "renderer-ssao-intensity";
+	var OPTION_SSAO_BIAS = "renderer-ssao-bias";
+	var OPTION_SSAO_RADIUS = "renderer-ssao-radius";
+	var FLAGS = {};
+	FLAGS[OPTION_SSAO_SCALE] = {defaultValue: 1};
+	FLAGS[OPTION_SSAO_INTENSITY] = {defaultValue: 5};
+	FLAGS[OPTION_SSAO_BIAS] = {defaultValue: 0.2};
+	FLAGS[OPTION_SSAO_RADIUS] = {defaultValue: 1};
+	for(var flag in FLAGS){
+		XML3D.options.register(flag, FLAGS[flag].defaultValue);
+	}
 
-    var SSAOPass = function (renderInterface, output, opt) {
-        webgl.BaseRenderPass.call(this, renderInterface, output, opt);
-        var context = this.renderInterface.context;
-        this._program = context.programFactory.getProgramByName("ssao");
-        this.randomVectorTexture = this.createRandomVectorTexture(context);
-        this.loadRandomVectorImage();
-        this._screenQuad = new XML3D.webgl.FullscreenQuad(context);
-        this._uniformsDirty = true;
-//      if (!this.inputs.positionBuffer)
-//          this._positionPass = this.createVertexAttributePass("render-position");
-//      if (!this.inputs.normalBuffer)
-//          this._normalPass = this.createVertexAttributePass("render-normal");
-    };
+	var SSAOPass = function (renderInterface, output, opt) {
+		webgl.BaseRenderPass.call(this, renderInterface, output, opt);
+		var context = this.renderInterface.context;
+		this._program = context.programFactory.getProgramByName("ssao");
+		this.randomVectorTexture = this.createRandomVectorTexture(context);
+		this.loadRandomVectorImage();
+		this._screenQuad = new XML3D.webgl.FullscreenQuad(context);
+		this._uniformsDirty = true;
+//		if (!this.inputs.positionBuffer)
+//			this._positionPass = this.createVertexAttributePass("render-position");
+//		if (!this.inputs.normalBuffer)
+//			this._normalPass = this.createVertexAttributePass("render-normal");
+	};
 
-    XML3D.createClass(SSAOPass, webgl.BaseRenderPass);
+	XML3D.createClass(SSAOPass, webgl.BaseRenderPass);
 
-    XML3D.extend(SSAOPass.prototype, {
-        createRandomVectorTexture: function(context) {
-            var gl = context.gl;
-            var tex = new XML3D.webgl.GLTexture(gl);
-            tex.createTex2DFromData(gl.RGBA, 64, 64, gl.RGBA, gl.UNSIGNED_BYTE, {
-                wrapS : gl.REPEAT,
-                wrapT : gl.REPEAT,
-                minFilter : gl.LINEAR,
-                magFilter : gl.LINEAR
-            });
-            tex.isTexture = true;
-            return tex;
-        },
+	XML3D.extend(SSAOPass.prototype, {
+		createRandomVectorTexture: function(context) {
+			var gl = context.gl;
+			var tex = new XML3D.webgl.GLTexture(gl);
+			tex.createTex2DFromData(gl.RGBA, 64, 64, gl.RGBA, gl.UNSIGNED_BYTE, {
+				wrapS : gl.REPEAT,
+				wrapT : gl.REPEAT,
+				minFilter : gl.LINEAR,
+				magFilter : gl.LINEAR
+			});
+			tex.isTexture = true;
+			return tex;
+		},
 
-        loadRandomVectorImage: function() {
-            var img = new Image();
-            img.src = base64RandomNormals;
-            var gl = this.renderInterface.context.gl;
-            var texhandle = this.randomVectorTexture.handle;
+		loadRandomVectorImage: function() {
+			var img = new Image();
+			img.src = base64RandomNormals;
+			var gl = this.renderInterface.context.gl;
+			var texhandle = this.randomVectorTexture.handle;
 
-            img.onload = function() {
-                gl.bindTexture(gl.TEXTURE_2D, texhandle);
-                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
-            }
-        },
+			img.onload = function() {
+				gl.bindTexture(gl.TEXTURE_2D, texhandle);
+				gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+			}
+		},
 
-        createVertexAttributePass: function (programName) {
-            var context = this.renderInterface.context;
-            var buffer= new webgl.GLRenderTarget(context, {
-                width: context.canvasTarget.width,
-                height: context.canvasTarget.height,
-                colorFormat: context.gl.RGBA,
-                colorType: context.gl.FLOAT,
-                depthFormat: context.gl.DEPTH_COMPONENT16,
-                stencilFormat: null,
-                depthAsRenderbuffer: true
-            });
-            return new webgl.VertexAttributePass(this.renderInterface, buffer, {
-                programName: programName
-            });
-        },
+		createVertexAttributePass: function (programName) {
+			var context = this.renderInterface.context;
+			var buffer= new webgl.GLRenderTarget(context, {
+				width: context.canvasTarget.width,
+				height: context.canvasTarget.height,
+				colorFormat: context.gl.RGBA,
+				colorType: context.gl.FLOAT,
+				depthFormat: context.gl.DEPTH_COMPONENT16,
+				stencilFormat: null,
+				depthAsRenderbuffer: true
+			});
+			return new webgl.VertexAttributePass(this.renderInterface, buffer, {
+				programName: programName
+			});
+		},
 
-        render: (function () {
-//          if (this._positionPass)
-//              this._positionPass.setProcessed(false);
+		render: (function () {
+//			if (this._positionPass)
+//				this._positionPass.setProcessed(false);
 
-            var viewMatrix = XML3D.math.mat4.create();
-            var uniformNames = ["viewMatrix"];
-            return function (scene) {
-                var gl = this.renderInterface.context.gl;
-                var target = this.output;
+			var viewMatrix = XML3D.math.mat4.create();
+			var uniformNames = ["viewMatrix"];
+			return function (scene) {
+				var gl = this.renderInterface.context.gl;
+				var target = this.output;
 
-                target.bind();
-                gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-                gl.viewport(0, 0, target.getWidth(), target.getHeight());
-                gl.disable(gl.DEPTH_TEST);
+				target.bind();
+				gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+				gl.viewport(0, 0, target.getWidth(), target.getHeight());
+				gl.disable(gl.DEPTH_TEST);
 
-                this._program.bind();
-                this._setNonVolatileShaderUniforms();
+				this._program.bind();
+				this._setNonVolatileShaderUniforms();
 
-                var uniforms = {};
-                scene.getActiveView().getWorldToViewMatrix(viewMatrix);
-                uniforms["viewMatrix"] = viewMatrix;
-                this._program.setSystemUniformVariables(uniformNames, uniforms);
-                this._screenQuad.draw(this._program);
+				var uniforms = {};
+				scene.getActiveView().getWorldToViewMatrix(viewMatrix);
+				uniforms["viewMatrix"] = viewMatrix;
+				this._program.setSystemUniformVariables(uniformNames, uniforms);
+				this._screenQuad.draw(this._program);
 
-                this._program.unbind();
-                target.unbind();
-            }
-        }()),
+				this._program.unbind();
+				target.unbind();
+			}
+		}()),
 
-        _setNonVolatileShaderUniforms: (function() {
-            var uniformNames = [
-                "canvasSize",
-                "sPositionTex",
-                "sNormalTex",
-                "sRandomNormals",
-                "uRandomTexSize",
-                "uScale",
-                "uBias",
-                "uIntensity",
-                "uSampleRadius",
-                "uConstVectors"
-            ];
+		_setNonVolatileShaderUniforms: (function() {
+			var uniformNames = [
+				"canvasSize",
+				"sPositionTex",
+				"sNormalTex",
+				"sRandomNormals",
+				"uRandomTexSize",
+				"uScale",
+				"uBias",
+				"uIntensity",
+				"uSampleRadius",
+				"uConstVectors"
+			];
 
-            return function() {
-                if (!this._uniformsDirty)
-                    return;
+			return function() {
+				if (!this._uniformsDirty)
+					return;
 
-                var uniforms = {};
-                var program = this._program;
-                program.bind();
-                var target = this.output;
+				var uniforms = {};
+				var program = this._program;
+				program.bind();
+				var target = this.output;
 
-                uniforms["canvasSize"] = [target.width, target.height];
-                uniforms["sPositionTex"] = [this.inputs.positionBuffer.colorTarget.handle];
-                uniforms["sNormalTex"] = [this.inputs.normalBuffer.colorTarget.handle];
-                uniforms["sRandomNormals"] = [this.randomVectorTexture];
-                uniforms["uRandomTexSize"] = [64, 64];
-                uniforms["uScale"] = XML3D.options.getValue(OPTION_SSAO_SCALE);
-                uniforms["uBias"] = XML3D.options.getValue(OPTION_SSAO_BIAS);
-                uniforms["uIntensity"] = XML3D.options.getValue(OPTION_SSAO_INTENSITY);
-                uniforms["uSampleRadius"] = XML3D.options.getValue(OPTION_SSAO_RADIUS);
-                uniforms["uConstVectors"] = [1,0, -1,0, 0,1, 0,-1];
+				uniforms["canvasSize"] = [target.width, target.height];
+				uniforms["sPositionTex"] = [this.inputs.positionBuffer.colorTarget.handle];
+				uniforms["sNormalTex"] = [this.inputs.normalBuffer.colorTarget.handle];
+				uniforms["sRandomNormals"] = [this.randomVectorTexture];
+				uniforms["uRandomTexSize"] = [64, 64];
+				uniforms["uScale"] = XML3D.options.getValue(OPTION_SSAO_SCALE);
+				uniforms["uBias"] = XML3D.options.getValue(OPTION_SSAO_BIAS);
+				uniforms["uIntensity"] = XML3D.options.getValue(OPTION_SSAO_INTENSITY);
+				uniforms["uSampleRadius"] = XML3D.options.getValue(OPTION_SSAO_RADIUS);
+				uniforms["uConstVectors"] = [1,0, -1,0, 0,1, 0,-1];
 
-                program.setSystemUniformVariables(uniformNames, uniforms);
-                program.unbind();
+				program.setSystemUniformVariables(uniformNames, uniforms);
+				program.unbind();
 
 //                this._uniformsDirty = false;
-            }
-        })()
-    });
+			}
+		})()
+	});
 
-    webgl.SSAOPass = SSAOPass;
+	webgl.SSAOPass = SSAOPass;
 
 }(XML3D.webgl));
 (function (webgl) {
 
-    "use strict";
+	"use strict";
 
-    var BoxBlurPass = function (renderInterface, output, opt) {
-        webgl.BaseRenderPass.call(this, renderInterface, output, opt);
-        this._program = this.renderInterface.context.programFactory.getProgramByName("boxblur");
-        this._screenQuad = new XML3D.webgl.FullscreenQuad(this.renderInterface.context);
-        this._uniformsDirty = true;
-    };
+	var BoxBlurPass = function (renderInterface, output, opt) {
+		webgl.BaseRenderPass.call(this, renderInterface, output, opt);
+		this._program = this.renderInterface.context.programFactory.getProgramByName("boxblur");
+		this._screenQuad = new XML3D.webgl.FullscreenQuad(this.renderInterface.context);
+		this._uniformsDirty = true;
+	};
 
-    XML3D.createClass(BoxBlurPass, webgl.BaseRenderPass);
+	XML3D.createClass(BoxBlurPass, webgl.BaseRenderPass);
 
-    XML3D.extend(BoxBlurPass.prototype, {
-        render: (function () {
-            return function () {
-                var gl = this.renderInterface.context.gl;
-                var target = this.output;
+	XML3D.extend(BoxBlurPass.prototype, {
+		render: (function () {
+			return function () {
+				var gl = this.renderInterface.context.gl;
+				var target = this.output;
 
-                target.bind();
-                gl.clear(gl.COLOR_BUFFER_BIT);
-                gl.disable(gl.DEPTH_TEST);
+				target.bind();
+				gl.clear(gl.COLOR_BUFFER_BIT);
+				gl.disable(gl.DEPTH_TEST);
 
-                this._program.bind();
-                this._setNonVolatileShaderUniforms();
+				this._program.bind();
+				this._setNonVolatileShaderUniforms();
 
-                this._screenQuad.draw(this._program);
+				this._screenQuad.draw(this._program);
 
-                this._program.unbind();
-                target.unbind();
-            }
-        }()),
+				this._program.unbind();
+				target.unbind();
+			}
+		}()),
 
-        _setNonVolatileShaderUniforms: (function() {
-            var uniforms = {};
-            var uniformNames = ["canvasSize", "sInTexture", "blurOffset"];
+		_setNonVolatileShaderUniforms: (function() {
+			var uniforms = {};
+			var uniformNames = ["canvasSize", "sInTexture", "blurOffset"];
 
-            return function() {
-                if (!this._uniformsDirty)
-                    return;
+			return function() {
+				if (!this._uniformsDirty)
+					return;
 
-                var program = this._program;
-                var target = this.output;
+				var program = this._program;
+				var target = this.output;
 
-                uniforms["canvasSize"] = [target.width, target.height];
-                uniforms["sInTexture"] = [this.inputs.buffer.colorTarget.handle];
-                uniforms["blurOffset"] = [1.0, 1.0];
-                program.setSystemUniformVariables(uniformNames, uniforms);
+				uniforms["canvasSize"] = [target.width, target.height];
+				uniforms["sInTexture"] = [this.inputs.buffer.colorTarget.handle];
+				uniforms["blurOffset"] = [1.0, 1.0];
+				program.setSystemUniformVariables(uniformNames, uniforms);
 
 //                this._uniformsDirty = false;
-            }
-        })()
-    });
+			}
+		})()
+	});
 
-    webgl.BoxBlurPass = BoxBlurPass;
+	webgl.BoxBlurPass = BoxBlurPass;
 
 }(XML3D.webgl));
 (function (webgl) {
@@ -29486,7 +28445,7 @@ XML3D.webgl.stopEvent = function(ev) {
         webgl.AbstractShaderComposer.call(this, context, shaderInfo);
 
         if (!window.Shade)
-            throw new Error("shade.js library not found");
+            throw new Error("Shade.js not found");
 
         this.context = context;
 
@@ -29639,7 +28598,7 @@ XML3D.webgl.stopEvent = function(ev) {
                         var Constructor = ComposerConstructors[shaderInfo.getScriptType()];
                         result = new Constructor(this.context, shaderInfo);
                     } catch(e) {
-                        XML3D.debug.logError("No shader could be created for " + scriptURI + ":", e.message);
+                        XML3D.debug.logError("No shader found for : " + shaderInfo.getScriptType());
                         return this.defaultComposer;
                     }
                                     }
@@ -29664,6 +28623,7 @@ XML3D.webgl.stopEvent = function(ev) {
             this.lightValuesDirty = false;
         },
         setLightStructureDirty: function() {
+            XML3D.debug.logWarning("Light structure changes not yet supported.");
             this.setShaderRecompile();
         },
         setShaderRecompile: function(){
@@ -29720,20 +28680,6 @@ XML3D.webgl.stopEvent = function(ev) {
                 "type": "array", "elements": { "type": "object", "kind": "float3" }, "staticSize": 5,
                 "source": "uniform"
             },
-            "pointLightCastShadow": {
-                "type": "array", "elements": { "type": "boolean" }, "staticSize": 5,
-                "source": "uniform"
-            },
-            "pointLightShadowBias": {
-                "type": "array", "elements": { "type": "number" }, "staticSize": 5,
-                "source": "uniform"
-            },
-            "pointLightShadowMap": {
-                "type": "array", "elements": { "type": "object", "kind": "texture" }, "staticSize": 5, "source": "uniform"
-            },
-            "pointLightMatrix": { "type": "array", "elements": { "type": "object", "kind": "matrix4" },  "staticSize": 5, "source": "uniform" },
-            "pointLightProjection": { "type": "array", "elements": { "type": "object", "kind": "matrix4" },  "staticSize": 5, "source": "uniform" },
-            "pointLightNearFar": { "type": "array", "elements": { "type": "object", "kind": "float2" },  "staticSize": 5, "source": "uniform" },
 
             "MAX_DIRECTIONALLIGHTS": { "type": "int", "source": "constant", "staticValue": 5 },
             "directionalLightOn": { "type": "array", "elements": { "type": "boolean" }, "staticSize": 5, "source": "uniform"},
@@ -29745,18 +28691,6 @@ XML3D.webgl.stopEvent = function(ev) {
                 "type": "array", "elements": { "type": "object", "kind": "float3" }, "staticSize": 5,
                 "source": "uniform"
             },
-            "directionalLightCastShadow": {
-                "type": "array", "elements": { "type": "boolean" }, "staticSize": 5,
-                "source": "uniform"
-            },
-            "directionalLightShadowBias": {
-                "type": "array", "elements": { "type": "number" }, "staticSize": 5,
-                "source": "uniform"
-            },
-            "directionalLightShadowMap": {
-                "type": "array", "elements": { "type": "object", "kind": "texture" }, "staticSize": 5, "source": "uniform"
-            },
-            "directionalLightMatrix": { "type": "array", "elements": { "type": "object", "kind": "matrix4" },  "staticSize": 5, "source": "uniform" },
 
             "MAX_SPOTLIGHTS": { "type": "int", "source": "constant", "staticValue": 5 },
             "spotLightOn": { "type": "array", "elements": { "type": "boolean" }, "staticSize": 5, "source": "uniform"},
@@ -30041,11 +28975,11 @@ XML3D.webgl.stopEvent = function(ev) {
     var c_SystemUpdate = {
         "pointLightOn": {
             staticValue : "MAX_POINTLIGHTS",
-            staticSize: ["pointLightOn", "pointLightAttenuation", "pointLightIntensity", "pointLightPosition", "pointLightCastShadow", "pointLightShadowBias", "pointLightShadowMap", "pointLightMatrix", "pointLightNearFar"]
+            staticSize: ["pointLightOn", "pointLightAttenuation", "pointLightIntensity", "pointLightPosition"]
         },
         "directionalLightOn" : {
             staticValue: "MAX_DIRECTIONALLIGHTS",
-            staticSize: ["directionalLightOn", "directionalLightIntensity", "directionalLightDirection", "directionalLightCastShadow", "directionalLightShadowBias", "directionalLightShadowMap", "directionalLightMatrix" ]
+            staticSize: ["directionalLightOn", "directionalLightIntensity", "directionalLightDirection" ]
         },
         "spotLightOn" : {
             staticValue: "MAX_SPOTLIGHTS",
@@ -30576,9 +29510,7 @@ XML3D.webgl.stopEvent = function(ev) {
                 //XML3D.debug.logError("Mesh does not have 'position' attribute.", this.mesh, this.getMeshType());
             }
             else if(!this.dataNode.isSubtreeLoading()){
-                var objectShaderResult = this.objectShaderRequest.getResult();
-                if(!objectShaderResult.loading)
-                    this.shaderClosure = this.shaderComposer.getShaderClosure(scene, this.objectShaderRequest);
+                this.shaderClosure = this.shaderComposer.getShaderClosure(scene, this.objectShaderRequest);
             }
         },
 
@@ -30786,14 +29718,10 @@ XML3D.webgl.stopEvent = function(ev) {
     };
 
     /**
-     * @param {Element} element
+     * @param element
      */
     XML3D.webgl.RenderAdapter.prototype.initChildElements = function(element) {
-        var child = element.firstElementChild;
-        while (child) {
-            this.initElement(child);
-            child = child.nextElementSibling;
-        }
+        this.traverse(this.factory.getAdapter);
     };
 
 
@@ -30943,8 +29871,8 @@ XML3D.webgl.stopEvent = function(ev) {
                 this.setViewAdapter(evt.adapter);
                 return;
             case XML3D.events.NODE_INSERTED:
-                // This also initializes the children
                 this.initElement(evt.wrapped.target);
+                this.initChildElements(evt.wrapped.target);
                 return;
             case XML3D.events.NODE_REMOVED:
                 // Handled in removed node
@@ -31059,8 +29987,7 @@ XML3D.webgl.stopEvent = function(ev) {
 
     XML3D.webgl.XML3DRenderAdapter = XML3DRenderAdapter;
 
-}());
-// Adapter for <view>
+}());// Adapter for <view>
 (function() {
     var ViewRenderAdapter = function(factory, node) {
         XML3D.webgl.TransformableAdapter.call(this, factory, node);
@@ -31550,15 +30477,13 @@ XML3D.webgl.MAX_MESH_INDEX_COUNT = 65535;
     p.handleConnectedAdapterEvent = function(evt) {
         switch(evt.type) {
             case XML3D.events.NODE_INSERTED:
-                // This also initializes the children
                 this.initElement(evt.wrapped.target);
+                this.initChildElements(evt.wrapped.target);
                 break;
             case XML3D.events.THIS_REMOVED:
                 this.dispose();
                 break;
             case XML3D.events.ADAPTER_HANDLE_CHANGED:
-                break;
-            case XML3D.events.NODE_REMOVED:
                 break;
             default:
                 XML3D.debug.logWarning("Unhandled connected adapter event for "+evt.key+" in shader adapter");
@@ -32060,9 +30985,9 @@ XML3D.shaders.register("phong", {
         "varying vec3 fragEyeVector;",
         "varying vec2 fragTexCoord;",
         "varying vec3 fragVertexColor;",
-
-        "#if (HAS_POINTLIGHT_SHADOWMAPS || HAS_DIRECTIONALLIGHT_SHADOWMAPS || HAS_SPOTLIGHT_SHADOWMAPS)",
-        "varying vec3 fragWorldPosition;", //needed by any of the light types
+        "#if MAX_SPOTLIGHTS > 0 && HAS_SPOTLIGHT_SHADOWMAPS",
+        "varying vec4 spotLightShadowMapCoord[ MAX_SPOTLIGHTS ];",
+        "uniform mat4 spotLightMatrix[ MAX_SPOTLIGHTS ];",
         "#endif",
 
         "uniform mat4 modelMatrix;",
@@ -32074,14 +30999,18 @@ XML3D.shaders.register("phong", {
         "void main(void) {",
         "    vec3 pos = position;",
         "    vec3 norm = normal;",
+
         "    gl_Position = modelViewProjectionMatrix * vec4(pos, 1.0);",
         "    fragNormal = normalize(modelViewMatrixN * norm);",
         "    fragVertexPosition = (modelViewMatrix * vec4(pos, 1.0)).xyz;",
         "    fragEyeVector = normalize(fragVertexPosition);",
         "    fragTexCoord = texcoord;",
         "    fragVertexColor = color;",
-        "#if (HAS_POINTLIGHT_SHADOWMAPS || HAS_DIRECTIONALLIGHT_SHADOWMAPS || HAS_SPOTLIGHT_SHADOWMAPS)",
-        "    fragWorldPosition = (modelMatrix * vec4(position, 1.0)).xyz;",
+        "#if MAX_SPOTLIGHTS > 0 && HAS_SPOTLIGHT_SHADOWMAPS",
+        "    vec3 worldPosition = (modelMatrix * vec4(position, 1.0)).xyz;",
+        "    for(int i = 0; i < MAX_SPOTLIGHTS; i++) {",
+        "      spotLightShadowMapCoord[i] = spotLightMatrix[i] * vec4(worldPosition, 1);",
+        "    }",
         "#endif",
         "}"
     ].join("\n"),
@@ -32095,7 +31024,7 @@ XML3D.shaders.register("phong", {
         "uniform float transparency;",
         "uniform mat4 viewMatrix;",
         "uniform bool useVertexColor;",
-        "uniform vec3 coords;",
+		"uniform vec3 coords;",
 
         "#if HAS_EMISSIVETEXTURE",
         "uniform sampler2D emissiveTexture;",
@@ -32113,32 +31042,17 @@ XML3D.shaders.register("phong", {
         "varying vec2 fragTexCoord;",
         "varying vec3 fragVertexColor;",
 
-        "#if (HAS_POINTLIGHT_SHADOWMAPS || HAS_DIRECTIONALLIGHT_SHADOWMAPS || HAS_SPOTLIGHT_SHADOWMAPS)",
-        "varying vec3 fragWorldPosition;",  //if there is Shadow we need world position and unpacking function
-        "float unpackDepth( const in vec4 rgba_depth ) {",
-        "  const vec4 bit_shift = vec4( 1.0 / ( 256.0 * 256.0 * 256.0 ), 1.0 / ( 256.0 * 256.0 ), 1.0 / 256.0, 1.0 );",
-        "  float depth = dot( rgba_depth, bit_shift );",
-        "  return depth;",
-        "}",
-        "#endif",
-
         "#if MAX_POINTLIGHTS > 0",
         "uniform vec3 pointLightAttenuation[MAX_POINTLIGHTS];",
         "uniform vec3 pointLightPosition[MAX_POINTLIGHTS];",
         "uniform vec3 pointLightIntensity[MAX_POINTLIGHTS];",
         "uniform bool pointLightOn[MAX_POINTLIGHTS];",
-        "uniform bool pointLightCastShadow[MAX_POINTLIGHTS];",
-            "#if HAS_POINTLIGHT_SHADOWMAPS",
-            "uniform samplerCube pointLightShadowMap[MAX_POINTLIGHTS];",
-            "uniform float pointLightShadowBias[MAX_POINTLIGHTS];",
-            "uniform vec2 pointLightNearFar[MAX_POINTLIGHTS];",
-            "float vecToDepth(vec3 vec, float n, float f){",
-                "vec3 absVec = abs(vec);" +
-                "float maxComp = max(absVec.x, max(absVec.y, absVec.z));",
-                "float res = (f+n)/(f-n)-(2.0*f*n)/(f-n)/maxComp;",
-                "return res*0.5+0.5;",
-            "}",
-            "#endif",
+        "#endif",
+
+        "#if MAX_DIRECTIONALLIGHTS > 0",
+        "uniform vec3 directionalLightDirection[MAX_DIRECTIONALLIGHTS];",
+        "uniform vec3 directionalLightIntensity[MAX_DIRECTIONALLIGHTS];",
+        "uniform bool directionalLightOn[MAX_DIRECTIONALLIGHTS];",
         "#endif",
 
         "#if MAX_SPOTLIGHTS > 0",
@@ -32152,49 +31066,19 @@ XML3D.shaders.register("phong", {
         "uniform float spotLightSoftness[MAX_SPOTLIGHTS];",
         "uniform bool spotLightCastShadow[MAX_SPOTLIGHTS];",
             "#if HAS_SPOTLIGHT_SHADOWMAPS",
-            "uniform mat4 spotLightMatrix[ MAX_SPOTLIGHTS ];",//used for shadowmapcoord calculation
             "uniform sampler2D spotLightShadowMap[MAX_SPOTLIGHTS];",
             "uniform float spotLightShadowBias[MAX_SPOTLIGHTS];",
+            "varying vec4 spotLightShadowMapCoord[MAX_SPOTLIGHTS];",
+
+            "float unpackDepth( const in vec4 rgba_depth ) {",
+            "  const vec4 bit_shift = vec4( 1.0 / ( 256.0 * 256.0 * 256.0 ), 1.0 / ( 256.0 * 256.0 ), 1.0 / 256.0, 1.0 );",
+            "  float depth = dot( rgba_depth, bit_shift );",
+            "  return depth;",
+            "} ",
             "#endif",
         "#endif",
-
-
-        "#if MAX_DIRECTIONALLIGHTS > 0",
-        "uniform vec3 directionalLightDirection[MAX_DIRECTIONALLIGHTS];",
-        "uniform vec3 directionalLightIntensity[MAX_DIRECTIONALLIGHTS];",
-        "uniform bool directionalLightOn[MAX_DIRECTIONALLIGHTS];",
-        "uniform bool directionalLightCastShadow[MAX_DIRECTIONALLIGHTS];",
-            "#if HAS_DIRECTIONALLIGHT_SHADOWMAPS",
-            "uniform mat4 directionalLightMatrix[MAX_DIRECTIONALLIGHTS];",
-            "uniform sampler2D directionalLightShadowMap[MAX_DIRECTIONALLIGHTS];",
-            "uniform float directionalLightShadowBias[MAX_DIRECTIONALLIGHTS];",
-            "#endif",
-        "#endif",
-
-
-        "uniform sampler2D ssaoMap;",
-
+		"uniform sampler2D ssaoMap;",
         "void main(void) {",
-        //calculate shadowmap coords (vector for pointlight)
-        "#if MAX_POINTLIGHTS > 0 && HAS_POINTLIGHT_SHADOWMAPS",
-        "    vec3 pointLightShadowMapDirection[MAX_POINTLIGHTS];",
-        "    for(int i = 0; i < MAX_POINTLIGHTS; i++) {",
-        "       pointLightShadowMapDirection[i] = fragWorldPosition - pointLightPosition[i];",
-        "    }",
-        "#endif",
-        "#if MAX_SPOTLIGHTS > 0 && HAS_SPOTLIGHT_SHADOWMAPS",
-        "    vec4 spotLightShadowMapCoord[MAX_SPOTLIGHTS];",
-        "    for(int i = 0; i < MAX_SPOTLIGHTS; i++) {",
-        "      spotLightShadowMapCoord[i] = spotLightMatrix[i] * vec4(fragWorldPosition, 1.0);",
-        "    }",
-        "#endif",
-        "#if MAX_DIRECTIONALLIGHTS > 0 && HAS_DIRECTIONALLIGHT_SHADOWMAPS",
-        "    vec4 directionalLightShadowMapCoord[MAX_DIRECTIONALLIGHTS];",
-        "    for(int i = 0; i < MAX_DIRECTIONALLIGHTS; i++) {",
-        "      directionalLightShadowMapCoord[i] = directionalLightMatrix[i] * vec4(fragWorldPosition, 1.0);",
-        "    }",
-        "#endif",
-
         "  float alpha =  max(0.0, 1.0 - transparency);",
         "  vec3 objDiffuse = diffuseColor;",
         "  if(useVertexColor)",
@@ -32214,138 +31098,102 @@ XML3D.shaders.register("phong", {
         "  #if HAS_SPECULARTEXTURE",
         "    objSpecular = objSpecular * texture2D(specularTexture, fragTexCoord).rgb;",
         "  #endif",
-        "  #if HAS_SSAOMAP",
-        "    float ssao = 1.0 - texture2D(ssaoMap, gl_FragCoord.xy / coords.xy).r;",
-        "  #endif",
-
-        "  float shadowInfluence = 0.0;", //used for sampling shadow
-
-        "#if MAX_POINTLIGHTS > 0",
+		"  #if HAS_SSAOMAP",
+		"	 float ssao = 1.0 - texture2D(ssaoMap, gl_FragCoord.xy / coords.xy).r;",
+		"  #endif",
+		"#if MAX_POINTLIGHTS > 0",
         "  for (int i = 0; i < MAX_POINTLIGHTS; i++) {",
-        "    shadowInfluence = 1.0;",
-        "    if(pointLightOn[i]){",
-        "   #if HAS_POINTLIGHT_SHADOWMAPS",
-        "       if(pointLightCastShadow[i]){",
-        "           shadowInfluence = 0.0;",
-        "           float lsDepth = vecToDepth(pointLightShadowMapDirection[i], pointLightNearFar[i].x, pointLightNearFar[i].y );",
-        "           float depth = unpackDepth( textureCube(pointLightShadowMap[i], pointLightShadowMapDirection[i])) +  pointLightShadowBias[i];",
-        "           if(lsDepth < depth)",
-        "               shadowInfluence = 1.0;",
-        "       }",
-        "       if(shadowInfluence > 0.0){",
-        "   #endif",
-        "       vec4 lPosition = viewMatrix * vec4( pointLightPosition[ i ], 1.0 );",
-        "       vec3 L = lPosition.xyz - fragVertexPosition;",
-        "       float dist = length(L);",
-        "       L = normalize(L);",
-        "       vec3 R = normalize(reflect(L,fragNormal));",
-        "       float atten = 1.0 / (pointLightAttenuation[i].x + pointLightAttenuation[i].y * dist + pointLightAttenuation[i].z * dist * dist);",
-        "       vec3 Idiff = pointLightIntensity[i] * objDiffuse * max(dot(fragNormal,L),0.0);",
-        "   #if HAS_SSAOMAP",
-        "       Idiff *= ssao;",
-        "   #endif",
-        "       vec3 Ispec = pointLightIntensity[i] * objSpecular * pow(max(dot(R,fragEyeVector),0.0), shininess*128.0);",
-        "       color = color + (atten*shadowInfluence*(Idiff + Ispec));",
-        "   #if HAS_POINTLIGHT_SHADOWMAPS",
-        "       }",  //pointlight visible
-        "   #endif",
-        "     }", //pointLight on
-        "  }", //pointLight loop
-        "#endif",
-
-        "#if MAX_SPOTLIGHTS > 0",
-        "  for (int i=0; i<MAX_SPOTLIGHTS; i++) {",
-        "    shadowInfluence = 1.0;",
-        "    if(spotLightOn[i]) {",
-        "  #if HAS_SPOTLIGHT_SHADOWMAPS",
-        "       if(spotLightCastShadow[i]){",
-        "           shadowInfluence = 0.0;",
-        "           vec4 lspos = spotLightShadowMapCoord[i];",
-        "           vec3 perspectiveDivPos = lspos.xyz / lspos.w * 0.5 + 0.5;",
-        "           float lsDepth = perspectiveDivPos.z;",
-        "           vec2 lightuv = perspectiveDivPos.xy;",
-        "           float depth = unpackDepth(texture2D(spotLightShadowMap[i], lightuv)) + spotLightShadowBias[i];",
-        "           if(lsDepth < depth)",
-        "               shadowInfluence = 1.0;",
-        "       }",
-        "       if(shadowInfluence > 0.0){",
-        "  #endif",
-        "       vec4 lPosition = viewMatrix * vec4( spotLightPosition[ i ], 1.0 );",
-        "       vec3 L = lPosition.xyz - fragVertexPosition;",
-        "       float dist = length(L);",
-        "       L = normalize(L);",
-        "       vec3 R = normalize(reflect(L,fragNormal));",
-        "       float atten = 1.0 / (spotLightAttenuation[i].x + spotLightAttenuation[i].y * dist + spotLightAttenuation[i].z * dist * dist);",
-        "       vec3 Idiff = spotLightIntensity[i] * objDiffuse * max(dot(fragNormal,L),0.0);",
-        "   #if HAS_SSAOMAP",
-        "       Idiff *= ssao;",
-        "   #endif",
-        "       vec3 Ispec = spotLightIntensity[i] * objSpecular * pow(max(dot(R,fragEyeVector),0.0), shininess*128.0);",
-        "       vec4 lDirection = viewMatrix * vec4(-spotLightDirection[i], 0.0);",
-        "       vec3 D = normalize(lDirection.xyz);",
-        "       float angle = dot(L, D);",
-        "       if(angle > spotLightCosFalloffAngle[i]) {",
-        "           float softness = 1.0;",
-        "           if (angle < spotLightCosSoftFalloffAngle[i])",
-        "               softness = (angle - spotLightCosFalloffAngle[i]) /  (spotLightCosSoftFalloffAngle[i] -  spotLightCosFalloffAngle[i]);",
-        "           color += atten*softness*shadowInfluence*(Idiff + Ispec);",
-        "       }",
-        "   #if HAS_SPOTLIGHT_SHADOWMAPS",
-        "       }", //light visible if shadow enabled
-        "   #endif",
-        "   } ", // spotlight on
-        "  }", // light loop
+        "    if(!pointLightOn[i])",
+        "      continue;",
+        "    vec4 lPosition = viewMatrix * vec4( pointLightPosition[ i ], 1.0 );",
+        "    vec3 L = lPosition.xyz - fragVertexPosition;",
+        "    float dist = length(L);",
+        "    L = normalize(L);",
+        "    vec3 R = normalize(reflect(L,fragNormal));",
+        "    float atten = 1.0 / (pointLightAttenuation[i].x + pointLightAttenuation[i].y * dist + pointLightAttenuation[i].z * dist * dist);",
+        "    vec3 Idiff = pointLightIntensity[i] * objDiffuse * max(dot(fragNormal,L),0.0);",
+		"  #if HAS_SSAOMAP",
+		"	 Idiff *= ssao;",
+		"  #endif",
+        "    vec3 Ispec = pointLightIntensity[i] * objSpecular * pow(max(dot(R,fragEyeVector),0.0), shininess*128.0);",
+        "    color = color + (atten*(Idiff + Ispec));",
+        "  }",
         "#endif",
 
         "#if MAX_DIRECTIONALLIGHTS > 0",
         "  for (int i=0; i<MAX_DIRECTIONALLIGHTS; i++) {",
-        "   shadowInfluence = 1.0;",
-        "   if(directionalLightOn[i]){",
-        "   #if HAS_DIRECTIONALLIGHT_SHADOWMAPS",
-        "       if(directionalLightCastShadow[i]){",
-        "           shadowInfluence = 0.0;",
-        "           vec4 lspos = directionalLightShadowMapCoord[i];",
-        "           vec3 orthogonalDivPos = lspos.xyz / lspos.w *0.5 + 0.5;",
-        "           float lsDepth = orthogonalDivPos.z;",
-        "           vec2 lightuv = orthogonalDivPos.xy;",
-        "               float depth = unpackDepth(texture2D(directionalLightShadowMap[i], lightuv))+directionalLightShadowBias[i];",
-        "               if(lsDepth < depth) shadowInfluence = 1.0;",
-        "       }",
-        "       if(shadowInfluence > 0.0){",
-        "   #endif",
-        "       vec4 lDirection = viewMatrix * vec4(directionalLightDirection[i], 0.0);",
-        "       vec3 L =  normalize(-lDirection.xyz);",
-        "       vec3 R = normalize(reflect(L,fragNormal));",
-        "       vec3 Idiff = directionalLightIntensity[i] * objDiffuse * max(dot(fragNormal,L),0.0);",
-        "   #if HAS_SSAOMAP",
-        "       Idiff *= ssao;",
-        "   #endif",
-        "       vec3 Ispec = directionalLightIntensity[i] * objSpecular * pow(max(dot(R,fragEyeVector),0.0), shininess*128.0);",
-        "       color = color + shadowInfluence*((Idiff + Ispec));",
-        "   #if HAS_DIRECTIONALLIGHT_SHADOWMAPS",
-        "       }", //light visible
-        "   #endif",
-        "   }", //dirLight on
-        "  }", // dirLight loop
+        "    if(!directionalLightOn[i])",
+        "      continue;",
+        "    vec4 lDirection = viewMatrix * vec4(directionalLightDirection[i], 0.0);",
+        "    vec3 L =  normalize(-lDirection.xyz);",
+        "    vec3 R = normalize(reflect(L,fragNormal));",
+        "    vec3 Idiff = directionalLightIntensity[i] * objDiffuse * max(dot(fragNormal,L),0.0);",
+		"  #if HAS_SSAOMAP",
+		"	 Idiff *= ssao;",
+		"  #endif",
+        "    vec3 Ispec = directionalLightIntensity[i] * objSpecular * pow(max(dot(R,fragEyeVector),0.0), shininess*128.0);",
+        "    color = color + ((Idiff + Ispec));",
+        "  }",
         "#endif",
-        "  gl_FragColor = vec4(color, alpha);",
+
+        "#if MAX_SPOTLIGHTS > 0",
+        "  for (int i=0; i<MAX_SPOTLIGHTS; i++) {",
+        "    if(spotLightOn[i]) {",
+        "  #if HAS_SPOTLIGHT_SHADOWMAPS",
+        "         bool lightIsVisible = true;",
+        "         if(spotLightCastShadow[i]){",
+        "             lightIsVisible = false;",
+        "             vec4 lspos = spotLightShadowMapCoord[i];",
+		"			  vec3 perspectiveDivPos = lspos.xyz / lspos.w * 0.5 + 0.5;",
+		"			  float lsDepth = perspectiveDivPos.z;",
+		"			  vec2 lightuv = perspectiveDivPos.xy;",
+        "			  float depth = unpackDepth(texture2D(spotLightShadowMap[i], lightuv)) + spotLightShadowBias[i];",
+        "             lightIsVisible = lsDepth < depth;",
+        "          }",
+        "          if(lightIsVisible){",
+        "  #endif",
+        "    vec4 lPosition = viewMatrix * vec4( spotLightPosition[ i ], 1.0 );",
+        "    vec3 L = lPosition.xyz - fragVertexPosition;",	
+        "    float dist = length(L);",
+        "    L = normalize(L);",
+        "    vec3 R = normalize(reflect(L,fragNormal));",
+        "    float atten = 1.0 / (spotLightAttenuation[i].x + spotLightAttenuation[i].y * dist + spotLightAttenuation[i].z * dist * dist);",
+        "    vec3 Idiff = spotLightIntensity[i] * objDiffuse * max(dot(fragNormal,L),0.0);",
+		"  #if HAS_SSAOMAP",
+		"	 Idiff *= ssao;",
+		"  #endif",
+        "    vec3 Ispec = spotLightIntensity[i] * objSpecular * pow(max(dot(R,fragEyeVector),0.0), shininess*128.0);",
+        "    vec4 lDirection = viewMatrix * vec4(-spotLightDirection[i], 0.0);",
+        "    vec3 D = normalize(lDirection.xyz);",
+        "    float angle = dot(L, D);",
+        "    if(angle > spotLightCosFalloffAngle[i]) {",
+        "       float softness = 1.0;",
+        "       //if (angle < spotLightCosSoftFalloffAngle[i])",
+        "       //    softness = (angle - spotLightCosFalloffAngle[i]) /  (spotLightCosSoftFalloffAngle[i] -  spotLightCosFalloffAngle[i]);",
+        "       color += atten*softness*(Idiff + Ispec);",
+        "    }",
+        "  #if HAS_SPOTLIGHT_SHADOWMAPS",
+        "   }",
+        "  #endif",
+        "    } ", // spotlight on
+        "  }", // light loop
+        "#endif",
+		"  gl_FragColor = vec4(color, alpha);",
         "}"
     ].join("\n"),
 
-    addDirectives: function (directives, lights, params) {
-        ["point", "directional", "spot"].forEach(function (type) {
-            var numLights = lights[type] ? lights[type].length : 0;
-            var castShadows = lights[type] && lights[type].some(function (light) {
-                return light.castShadow;
-            });
-            directives.push("MAX_" + type.toUpperCase() + "LIGHTS " + numLights);
-            directives.push("HAS_" + type.toUpperCase() + "LIGHT_SHADOWMAPS " + (castShadows ? 1 : 0));
-        });
-
+    addDirectives: function(directives, lights, params) {
+        var pointLights = lights.point ? lights.point.length : 0;
+        var directionalLights = lights.directional ? lights.directional.length : 0;
+        var spotLights = lights.spot ? lights.spot.length : 0;
+        directives.push("MAX_POINTLIGHTS " + pointLights);
+        directives.push("MAX_DIRECTIONALLIGHTS " + directionalLights);
+        directives.push("MAX_SPOTLIGHTS " + spotLights);
+        directives.push("HAS_SPOTLIGHT_SHADOWMAPS " + (lights.spot && !lights.spot.every(function(light) { return !light.castShadow; }) | 0));
         directives.push("HAS_DIFFUSETEXTURE " + ('diffuseTexture' in params ? "1" : "0"));
         directives.push("HAS_SPECULARTEXTURE " + ('specularTexture' in params ? "1" : "0"));
         directives.push("HAS_EMISSIVETEXTURE " + ('emissiveTexture' in params ? "1" : "0"));
-        directives.push("HAS_SSAOMAP " + (XML3D.options.getValue("renderer-ssao") ? "1" : "0"));
+		directives.push("HAS_SSAOMAP " + (XML3D.options.getValue("renderer-ssao") ? "1" : "0"));
     },
     hasTransparency: function(params) {
         return params.transparency && params.transparency.getValue()[0] > 0.001;
@@ -32364,10 +31212,8 @@ XML3D.shaders.register("phong", {
         diffuseTexture : null,
         emissiveTexture : null,
         specularTexture : null,
-        directionalLightShadowMap : null,
         spotLightShadowMap : null,
-        pointLightShadowMap : null,
-        ssaoMap: null
+		ssaoMap: null
     },
 
     attributes: {
